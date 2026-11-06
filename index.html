@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1016">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>El Impostor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
+<style>
+  :root{
+    --bg:#0e1016; --card:#171a23; --card2:#212532; --line:#2c3142;
+    --text:#eef0f6; --muted:#9aa1b2; --accent:#7c5cff;
+    --green:#22c55e; --red:#ef4444; --wa:#25d366;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px}
+  body{min-height:100vh;min-height:100dvh}
+  [hidden]{display:none!important}
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom))}
+  header.top{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
+  header.top .logo{font-size:38px;line-height:1}
+  header.top h1{font-size:26px;margin:0}
+  header.top p{margin:2px 0 0;color:var(--muted);font-size:14px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+  .card h2 small{text-transform:none;letter-spacing:0;font-weight:500}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+
+  input[type=text]{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);
+    border-radius:12px;padding:14px;font-size:17px;outline:none;min-height:52px}
+  input[type=text]:focus{border-color:var(--accent)}
+  input::placeholder{color:#666d80}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .row .num{width:22px;color:var(--muted);font-size:14px;text-align:right;flex:none}
+
+  .btn{appearance:none;border:0;border-radius:14px;padding:14px 16px;font-size:17px;font-weight:700;color:var(--text);
+    background:var(--card2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    text-decoration:none;min-height:52px;font-family:inherit;transition:transform .08s,opacity .2s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:linear-gradient(135deg,#8b6dff,#5b3df5);color:#fff;box-shadow:0 8px 24px rgba(91,61,245,.35)}
+  .btn.block{width:100%}
+  .btn.ghost{background:transparent;border:1px solid var(--line)}
+  .btn.icon{width:52px;padding:0;flex:none;font-size:20px}
+  .btn.wa{background:var(--wa);color:#052e16}
+  .btn.big{min-height:62px;font-size:19px}
+  .btn[disabled]{opacity:.35;pointer-events:none}
+
+  .stepper{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .stepper .val{font-size:34px;font-weight:800;min-width:50px;text-align:center}
+
+  .seg{display:flex;background:var(--card2);border-radius:14px;padding:4px;margin-bottom:14px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:12px;border-radius:10px;
+    font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  .seg button.on{background:var(--accent);color:#fff}
+
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .chip{border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:14px;padding:12px 4px;
+    font-size:14px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-family:inherit}
+  .chip span{font-size:24px}
+  .chip.on{border-color:var(--accent);background:rgba(124,92,255,.2)}
+
+  .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+  .switch input{display:none}
+  .switch .track{width:56px;height:32px;border-radius:16px;background:var(--card2);border:1px solid var(--line);
+    position:relative;flex:none;transition:background .2s}
+  .switch .track::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+    background:#fff;transition:transform .2s}
+  .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
+  .switch input:checked + .track::after{transform:translateX(24px)}
+
+  .bottom{position:fixed;left:0;right:0;bottom:0;padding:24px 16px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(rgba(14,16,22,0),var(--bg) 35%);z-index:5}
+  .bottom .in{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+
+  .warn{background:rgba(234,179,8,.12);border:1px solid rgba(234,179,8,.4);color:#fde68a;border-radius:14px;
+    padding:12px 14px;font-size:14px;margin-bottom:14px}
+
+  /* Pantalla de enlaces */
+  .stats{display:flex;gap:8px;margin-bottom:14px}
+  .stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+  .stat b{display:block;font-size:22px}
+  .stat span{font-size:12px;color:var(--muted)}
+  .player{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px;transition:border-color .2s}
+  .player.sent{border-color:rgba(34,197,94,.55)}
+  .player .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+  .player .name{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--muted);flex:none}
+  .player.sent .badge{background:rgba(34,197,94,.18);color:#86efac}
+  .player .actions{display:flex;gap:8px}
+  .player .actions .wa{flex:1}
+
+  /* Pantalla del jugador */
+  .hello{text-align:center;margin:10px 0 16px}
+  .hello .who{font-size:30px;font-weight:800;margin-top:4px;word-break:break-word}
+  .reveal{min-height:330px;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px;margin-bottom:14px;width:100%;font-family:inherit;color:var(--text)}
+  button.reveal{cursor:pointer;border:2px dashed #3a4057;
+    background:repeating-linear-gradient(45deg,#171a23,#171a23 14px,#1b1f2a 14px,#1b1f2a 28px)}
+  button.reveal:active{transform:scale(.985)}
+  .reveal .ico{font-size:64px;margin-bottom:12px}
+  .reveal .tap{font-size:24px;font-weight:800}
+  .reveal .tapsub{color:var(--muted);margin-top:8px;font-size:14px}
+  .reveal.imp{background:radial-gradient(circle at 50% 30%,#4a0f16,#1a0709 75%);border:2px solid var(--red);color:#fecaca}
+  .reveal.ok{background:radial-gradient(circle at 50% 30%,#0d3d22,#06180e 75%);border:2px solid var(--green);color:#bbf7d0}
+  .reveal .label{font-size:18px;font-weight:600;opacity:.9}
+  .reveal .big{font-size:42px;font-weight:900;line-height:1.1;margin:8px 0;word-break:break-word}
+  .reveal.imp .big{color:var(--red);letter-spacing:.04em;font-size:46px}
+  .reveal.ok .big{color:var(--green)}
+  .reveal .hint{margin-top:10px;font-size:17px;background:rgba(0,0,0,.3);padding:8px 14px;border-radius:12px}
+  .timer{height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;width:100%;margin-top:22px}
+  .timer i{display:block;height:100%;width:100%;background:currentColor;transform-origin:left}
+  .rules ol{margin:0;padding-left:20px;line-height:1.5;color:#d4d8e3}
+  .rules li{margin-bottom:6px}
+  .center{text-align:center}
+  .state{text-align:center;padding:30px 10px}
+  .state .ico{font-size:64px}
+  .state h2{margin:12px 0 8px;font-size:24px}
+
+  .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:#fff;color:#111;padding:12px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;
+    transition:all .25s;z-index:20;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ============ PREPARACIÓN ============ -->
+<section id="setup" class="wrap" hidden>
+  <header class="top">
+    <div class="logo">🕵️</div>
+    <div><h1>El Impostor</h1><p>Prepara la partida y manda a cada uno su enlace</p></div>
+  </header>
+
+  <div id="fileWarn" class="warn" hidden>
+    ⚠️ Estás abriendo el archivo en local. Los enlaces solo funcionarán en otros móviles si la página está alojada en internet (GitHub Pages, Netlify…).
+  </div>
+
+  <div class="card">
+    <h2>Jugadores <small id="countPlayers"></small></h2>
+    <div id="playerList"></div>
+    <button id="addPlayer" class="btn ghost block">＋ Añadir jugador</button>
+  </div>
+
+  <div class="card">
+    <h2>Impostores <small id="maxImp"></small></h2>
+    <div class="stepper">
+      <button id="impMinus" class="btn icon" aria-label="Menos impostores">−</button>
+      <div class="val" id="impVal">1</div>
+      <button id="impPlus" class="btn icon" aria-label="Más impostores">＋</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Palabra</h2>
+    <div class="seg">
+      <button data-mode="cat">🎲 Categoría</button>
+      <button data-mode="manual">✍️ Escribirla yo</button>
+    </div>
+    <div id="catBox"><div class="chips" id="chips"></div>
+      <p class="muted small" style="margin:10px 0 0">Se elige una palabra al azar. Nadie la verá en esta pantalla.</p>
+    </div>
+    <div id="manualBox" hidden>
+      <input type="text" id="manualWord" placeholder="Palabra secreta" autocomplete="off" maxlength="40">
+      <div style="height:8px"></div>
+      <input type="text" id="manualHint" placeholder="Pista para el impostor (opcional, ej.: Comida)" autocomplete="off" maxlength="40">
+      <p class="muted small" style="margin:10px 0 0">Si escribes tú la palabra, no deberías jugar esta ronda (ya la sabes).</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="switch">
+      <div><b>Pista para el impostor</b><div class="muted small">Verá la categoría de la palabra</div></div>
+      <input type="checkbox" id="showHint"><span class="track"></span>
+    </label>
+  </div>
+
+  <div class="bottom"><div class="in">
+    <button id="createBtn" class="btn primary block big">Crear partida</button>
+  </div></div>
+</section>
+
+<!-- ============ ENLACES ============ -->
+<section id="share" class="wrap" hidden>
+  <header class="top">
+    <div class="logo">📨</div>
+    <div><h1 id="roundTitle">Ronda 1</h1><p>Envía a cada jugador su enlace personal</p></div>
+  </header>
+
+  <div id="fileWarn2" class="warn" hidden>
+    ⚠️ Página abierta en local: estos enlaces no abrirán en otros móviles. Aloja el archivo en internet primero.
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="stPlayers">0</b><span>jugadores</span></div>
+    <div class="stat"><b id="stImp">0</b><span>impostores</span></div>
+    <div class="stat"><b id="stSent">0</b><span>enviados</span></div>
+  </div>
+
+  <div id="links"></div>
+
+  <p class="muted small center">La palabra y los impostores no se muestran aquí, así que tú también puedes jugar. Abre tu propio enlace para ver tu rol.</p>
+
+  <div class="bottom"><div class="in">
+    <button id="newRound" class="btn primary block big">🔄 Nueva ronda</button>
+    <button id="editGame" class="btn ghost block">✏️ Cambiar jugadores o ajustes</button>
+  </div></div>
+</section>
+
+<!-- ============ JUGADOR ============ -->
+<section id="player" class="wrap" hidden>
+  <div id="pOk">
+    <div class="hello">
+      <div class="muted" id="pRound">Ronda</div>
+      <div class="who" id="pName"></div>
+    </div>
+
+    <button id="revealBtn" class="reveal">
+      <div class="ico">👆</div>
+      <div class="tap">Toca para ver tu rol</div>
+      <div class="tapsub">Asegúrate de que nadie mira tu pantalla</div>
+    </button>
+
+    <div id="roleBox" class="reveal" hidden>
+      <div id="roleContent"></div>
+      <div class="timer"><i id="timerBar"></i></div>
+    </div>
+
+    <button id="hideBtn" class="btn block big" hidden>🙈 Ocultar</button>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Esta partida</h2>
+      <div id="pInfo" style="line-height:1.6"></div>
+    </div>
+
+    <div class="card rules">
+      <h2>Reglas rápidas</h2>
+      <ol>
+        <li>Todos tienen la misma palabra secreta… menos el impostor, que no la sabe.</li>
+        <li>Por turnos, cada uno dice <b>una palabra</b> relacionada con la secreta, sin decirla.</li>
+        <li>El impostor tiene que disimular y deducir de qué se habla.</li>
+        <li>Tras una o dos vueltas, votad a quién creéis que es el impostor.</li>
+        <li>Si lo pilláis, gana el grupo. Si no lo pilláis —o si adivina la palabra— gana el impostor.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="pOld" class="state" hidden>
+    <div class="ico">⌛</div>
+    <h2>Ronda antigua</h2>
+    <p class="muted">Este enlace es de una ronda anterior y ya hay una más nueva. Busca el último enlace que te han enviado.</p>
+  </div>
+
+  <div id="pBad" class="state" hidden>
+    <div class="ico">🤔</div>
+    <h2>Enlace no válido</h2>
+    <p class="muted">El enlace está incompleto o dañado. Pide que te lo vuelvan a enviar.</p>
+  </div>
+
+  <div class="center" style="margin-top:8px">
+    <button id="ownGame" class="btn ghost">🕵️ Crear mi propia partida</button>
+  </div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+
+/* ===================== DATOS ===================== */
+const CATS = {
+  comida: { label: "Comida", emoji: "🍕", words: [
+    "Pizza","Paella","Tortilla de patatas","Hamburguesa","Sushi","Lasaña","Gazpacho","Croquetas","Churros",
+    "Helado","Chocolate","Queso","Jamón","Ensalada","Macarrones","Espaguetis","Tacos","Burrito","Kebab",
+    "Patatas fritas","Huevo frito","Pan","Cereales","Yogur","Tarta de queso","Donut","Palomitas","Salmorejo",
+    "Fabada","Cocido","Empanada","Pulpo a la gallega","Sandía","Plátano","Fresa","Naranja"]},
+  animales: { label: "Animales", emoji: "🐘", words: [
+    "Perro","Gato","Elefante","Jirafa","León","Tigre","Delfín","Tiburón","Ballena","Pingüino","Canguro",
+    "Koala","Oso panda","Cocodrilo","Serpiente","Águila","Búho","Loro","Caballo","Vaca","Cerdo","Oveja",
+    "Gallina","Conejo","Ratón","Murciélago","Mono","Gorila","Cebra","Hipopótamo","Rinoceronte","Tortuga",
+    "Pulpo","Abeja","Mariposa","Hormiga","Camello","Lobo","Zorro"]},
+  paises: { label: "Países", emoji: "🌍", words: [
+    "España","Francia","Italia","Portugal","Alemania","Reino Unido","Irlanda","Grecia","Suecia","Noruega",
+    "Rusia","China","Japón","India","Australia","Estados Unidos","Canadá","México","Brasil","Argentina",
+    "Chile","Perú","Colombia","Cuba","Egipto","Marruecos","Sudáfrica","Turquía","Corea del Sur","Tailandia",
+    "Suiza","Países Bajos","Islandia","Nueva Zelanda","Jamaica"]},
+  peliculas: { label: "Películas", emoji: "🎬", words: [
+    "Titanic","Avatar","El Rey León","Toy Story","Buscando a Nemo","Frozen","Shrek","Harry Potter",
+    "El Señor de los Anillos","Star Wars","Jurassic Park","Regreso al futuro","Matrix","Los Vengadores",
+    "Spider-Man","Batman","Piratas del Caribe","Indiana Jones","Tiburón","E.T.","Coco","Up","Del revés",
+    "Los Increíbles","Cars","Gru, mi villano favorito","Mamma Mia!","Grease","Barbie","Oppenheimer",
+    "Ocho apellidos vascos","Torrente","Campeones","El laberinto del fauno","Interstellar","Aladdín"]},
+  profesiones: { label: "Profesiones", emoji: "👩‍⚕️", words: [
+    "Médico","Enfermero","Profesor","Bombero","Policía","Abogado","Juez","Cocinero","Camarero","Peluquero",
+    "Fontanero","Electricista","Carpintero","Albañil","Arquitecto","Ingeniero","Piloto","Azafato","Astronauta",
+    "Veterinario","Dentista","Farmacéutico","Periodista","Fotógrafo","Actor","Cantante","Futbolista","Panadero",
+    "Carnicero","Agricultor","Pescador","Mecánico","Taxista","Cartero","Socorrista","Informático","Psicólogo","Científico"]},
+  objetos: { label: "Objetos", emoji: "☂️", words: [
+    "Paraguas","Llave","Reloj","Gafas","Móvil","Mochila","Lámpara","Espejo","Tijeras","Cuchara","Tenedor",
+    "Sartén","Almohada","Manta","Silla","Mesa","Bolígrafo","Libro","Cartera","Peine","Cepillo de dientes",
+    "Toalla","Vela","Guitarra","Bicicleta","Mando de la tele","Auriculares","Cargador","Botella","Taza",
+    "Martillo","Escoba","Globo","Maleta","Calcetín"]},
+  deportes: { label: "Deportes", emoji: "⚽", words: [
+    "Fútbol","Baloncesto","Tenis","Pádel","Natación","Ciclismo","Atletismo","Boxeo","Judo","Kárate","Golf",
+    "Rugby","Balonmano","Voleibol","Esquí","Snowboard","Surf","Escalada","Patinaje","Gimnasia","Waterpolo",
+    "Béisbol","Hockey","Ajedrez","Bádminton","Tiro con arco","Esgrima","Remo","Piragüismo","Fórmula 1",
+    "Motociclismo","Triatlón","Maratón","Petanca","Ping-pong"]},
+  famosos: { label: "Famosos", emoji: "⭐", words: [
+    "Rafa Nadal","Leo Messi","Cristiano Ronaldo","Shakira","Rosalía","Bad Bunny","Taylor Swift","Michael Jackson",
+    "Elvis Presley","Madonna","Beyoncé","Lady Gaga","Antonio Banderas","Penélope Cruz","Leonardo DiCaprio",
+    "Brad Pitt","Tom Cruise","Pedro Almodóvar","Albert Einstein","Pablo Picasso","Salvador Dalí","Frida Kahlo",
+    "Cristóbal Colón","Napoleón","Cleopatra","Elon Musk","Bill Gates","Steve Jobs","Ibai Llanos","Fernando Alonso",
+    "Pau Gasol","Alejandro Sanz","Julio Iglesias","Lola Flores","Charles Chaplin","Marilyn Monroe","Usain Bolt"]}
+};
+const CAT_KEYS = Object.keys(CATS);
+const MIN_P = 3, MAX_P = 15, REVEAL_MS = 10000;
+
+/* ===================== UTILIDADES ===================== */
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let toastT;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+// Entero aleatorio uniforme en [0, n) con crypto.getRandomValues (sin sesgo de módulo)
+function rndInt(n) {
+  const lim = Math.floor(0x100000000 / n) * n, a = new Uint32Array(1);
+  do { crypto.getRandomValues(a); } while (a[0] >= lim);
+  return a[0] % n;
+}
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) { const j = rndInt(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+  return arr;
+}
+function randId(len) {
+  const ch = "abcdefghijkmnpqrstuvwxyz23456789"; let s = "";
+  for (let i = 0; i < len; i++) s += ch[rndInt(ch.length)];
+  return s;
+}
+const maxImp = n => Math.max(1, Math.floor(Math.max(n, MIN_P) / 2) - 1);
+
+/* ===================== OFUSCACIÓN ===================== */
+// JSON → UTF-8 → XOR (clave fija + sal aleatoria de 4 bytes) → base64 URL-safe.
+// No es cifrado fuerte: solo evita que el rol se lea a simple vista en el enlace.
+const KEY = new TextEncoder().encode("Imp0st0r·Clave·Fija·2026·¡No mires!");
+const ks = (i, salt) => KEY[i % KEY.length] ^ salt[i % 4] ^ ((i * 73 + 17) & 255);
+function b64uEnc(bytes) {
+  let s = ""; for (const b of bytes) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64uDec(str) {
+  str = str.replace(/-/g, "+").replace(/_/g, "/"); while (str.length % 4) str += "=";
+  const bin = atob(str), out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function obfuscate(bytes) {
+  const salt = new Uint8Array(4); crypto.getRandomValues(salt);
+  const out = new Uint8Array(bytes.length + 4); out.set(salt, 0);
+  for (let i = 0; i < bytes.length; i++) out[i + 4] = bytes[i] ^ ks(i, salt);
+  return b64uEnc(out);
+}
+function deobfuscate(str) {
+  const all = b64uDec(str); if (all.length < 6) throw new Error("corto");
+  const salt = all.slice(0, 4), data = all.slice(4);
+  for (let i = 0; i < data.length; i++) data[i] ^= ks(i, salt);
+  return JSON.parse(new TextDecoder().decode(data));
+}
+
+function isLocalFile() { return location.protocol === "file:" || location.origin === "null"; }
+function baseUrl() { return isLocalFile() ? location.href.split("#")[0] : location.origin + location.pathname; }
+
+/* ===================== ESTADO DEL ANFITRIÓN ===================== */
+const DEFAULT = { players: ["", "", ""], impostors: 1, mode: "cat", cat: "aleatoria",
+                  word: "", hint: "", showHint: true, game: null };
+let S = Object.assign({}, DEFAULT, store.get("imp_host", {}));
+if (!Array.isArray(S.players) || S.players.length < MIN_P) S.players = ["", "", ""];
+const save = () => store.set("imp_host", S);
+const filledNames = () => S.players.map(s => s.trim()).filter(Boolean);
+
+/* ===================== PREPARACIÓN ===================== */
+function renderPlayers() {
+  const box = $("#playerList"); box.innerHTML = "";
+  S.players.forEach((name, i) => {
+    const row = document.createElement("div"); row.className = "row";
+    const num = document.createElement("span"); num.className = "num"; num.textContent = i + 1;
+    const inp = document.createElement("input");
+    Object.assign(inp, { type: "text", value: name, placeholder: "Nombre del jugador " + (i + 1),
+                         maxLength: 20, autocomplete: "off", enterKeyHint: "next" });
+    inp.addEventListener("input", () => { S.players[i] = inp.value; save(); updateCounts(); });
+    inp.addEventListener("keydown", e => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const next = box.querySelectorAll("input")[i + 1];
+      if (next) next.focus(); else if (S.players.length < MAX_P) addPlayer();
+    });
+    const del = document.createElement("button");
+    del.className = "btn icon"; del.textContent = "✕"; del.setAttribute("aria-label", "Quitar jugador");
+    del.disabled = S.players.length <= MIN_P;
+    del.addEventListener("click", () => { S.players.splice(i, 1); save(); renderPlayers(); });
+    row.append(num, inp, del); box.append(row);
+  });
+  $("#addPlayer").disabled = S.players.length >= MAX_P;
+  updateCounts();
+}
+function addPlayer() {
+  if (S.players.length >= MAX_P) return;
+  S.players.push(""); save(); renderPlayers();
+  const all = $("#playerList").querySelectorAll("input"); all[all.length - 1].focus();
+}
+function updateCounts() {
+  const n = filledNames().length, m = maxImp(n);
+  if (S.impostors > m) S.impostors = m;
+  if (S.impostors < 1) S.impostors = 1;
+  $("#countPlayers").textContent = n + " / " + MAX_P;
+  $("#impVal").textContent = S.impostors;
+  $("#maxImp").textContent = "máx. " + m;
+  $("#impMinus").disabled = S.impostors <= 1;
+  $("#impPlus").disabled = S.impostors >= m;
+}
+function renderWordMode() {
+  document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
+  $("#catBox").hidden = S.mode !== "cat";
+  $("#manualBox").hidden = S.mode !== "manual";
+  const chips = $("#chips"); chips.innerHTML = "";
+  const opts = [["aleatoria", "🎲", "Aleatoria"]].concat(CAT_KEYS.map(k => [k, CATS[k].emoji, CATS[k].label]));
+  for (const [k, emo, label] of opts) {
+    const c = document.createElement("button"); c.className = "chip" + (S.cat === k ? " on" : "");
+    const sp = document.createElement("span"); sp.textContent = emo;
+    c.append(sp, document.createTextNode(label));
+    c.addEventListener("click", () => { S.cat = k; save(); renderWordMode(); });
+    chips.append(c);
+  }
+}
+function renderSetup() {
+  renderPlayers(); renderWordMode();
+  $("#manualWord").value = S.word; $("#manualHint").value = S.hint;
+  $("#showHint").checked = !!S.showHint;
+  $("#fileWarn").hidden = !isLocalFile();
+}
+
+function pickWord() {
+  if (S.mode === "manual") {
+    const w = S.word.trim();
+    if (!w) { toast("Escribe la palabra secreta"); $("#manualWord").focus(); return null; }
+    return { word: w, hint: S.hint.trim() || null };
+  }
+  const cat = S.cat === "aleatoria" ? CAT_KEYS[rndInt(CAT_KEYS.length)] : S.cat;
+  const used = store.get("imp_used", {});
+  let u = used[cat] || [];
+  let pool = CATS[cat].words.filter(w => !u.includes(w));
+  if (!pool.length) { u = []; pool = CATS[cat].words.slice(); }
+  const word = pool[rndInt(pool.length)];
+  u.push(word); used[cat] = u; store.set("imp_used", used);
+  return { word, hint: CATS[cat].label };
+}
+
+function createGame() {
+  const names = filledNames();
+  if (names.length < MIN_P) { toast("Hacen falta al menos " + MIN_P + " jugadores"); return false; }
+  if (names.length > MAX_P) { toast("Máximo " + MAX_P + " jugadores"); return false; }
+  const lower = names.map(n => n.toLowerCase());
+  if (new Set(lower).size !== lower.length) { toast("Hay nombres repetidos"); return false; }
+
+  const pick = pickWord(); if (!pick) return false;
+  const n = names.length, k = Math.min(Math.max(1, S.impostors), maxImp(n));
+  const impSet = new Set(shuffle([...Array(n).keys()]).slice(0, k));
+  const starter = names[rndInt(n)];
+
+  // Mismo grupo de jugadores → misma partida (gid) y ronda siguiente
+  const same = S.game && JSON.stringify(S.game.names) === JSON.stringify(names);
+  const gid = same ? S.game.gid : randId(8);
+  const roundNum = same ? S.game.roundNum + 1 : 1;
+  const r = Math.max(Date.now(), same ? S.game.r + 1 : 0);
+
+  const enc = new TextEncoder();
+  const raw = names.map((name, i) => {
+    const o = { v: 1, g: gid, r, q: roundNum, n: name, p: n, k, s: starter };
+    if (impSet.has(i)) { o.i = 1; if (S.showHint) o.h = pick.hint || ""; }
+    else { o.i = 0; o.w = pick.word; }
+    return enc.encode(JSON.stringify(o));
+  });
+  // Rellenar todos al mismo tamaño para que la longitud del enlace no delate al impostor
+  const L = Math.max(...raw.map(b => b.length)) + 4 + rndInt(12);
+  const base = baseUrl();
+  const links = raw.map((b, i) => {
+    const padded = new Uint8Array(L).fill(32); padded.set(b);
+    return { name: names[i], url: base + "#j=" + obfuscate(padded) };
+  });
+
+  S.game = { gid, r, roundNum, names, imp: k, links, sent: names.map(() => false), manual: S.mode === "manual" };
+  if (S.mode === "manual") { S.word = ""; S.hint = ""; }
+  save();
+  // Este dispositivo ya conoce la ronda nueva → sus enlaces antiguos se verán como "ronda antigua"
+  store.set("imp_latest_" + gid, r);
+  return true;
+}
+
+/* ===================== PANTALLA DE ENLACES ===================== */
+function markSent(i) {
+  if (!S.game.sent[i]) { S.game.sent[i] = true; save(); renderShare(); }
+}
+function message(name, url) {
+  return "🕵️ " + name + ", aquí tienes tu rol para El Impostor (ronda " + S.game.roundNum +
+         "). Ábrelo sin que nadie mire tu pantalla:\n" + url;
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const ta = document.createElement("textarea"); ta.value = text;
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0"; document.body.append(ta);
+  ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+  let ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+  ta.remove(); return ok;
+}
+function renderShare() {
+  const g = S.game;
+  $("#roundTitle").textContent = "Ronda " + g.roundNum;
+  $("#stPlayers").textContent = g.links.length;
+  $("#stImp").textContent = g.imp;
+  $("#stSent").textContent = g.sent.filter(Boolean).length + "/" + g.links.length;
+  $("#fileWarn2").hidden = !isLocalFile();
+  const box = $("#links"); box.innerHTML = "";
+  g.links.forEach((l, i) => {
+    const card = document.createElement("div"); card.className = "player" + (g.sent[i] ? " sent" : "");
+    const head = document.createElement("div"); head.className = "head";
+    const nm = document.createElement("div"); nm.className = "name"; nm.textContent = l.name;
+    const badge = document.createElement("div"); badge.className = "badge";
+    badge.textContent = g.sent[i] ? "✓ Enviado" : "Pendiente";
+    head.append(nm, badge);
+
+    const act = document.createElement("div"); act.className = "actions";
+    const wa = document.createElement("a"); wa.className = "btn wa";
+    wa.href = "https://wa.me/?text=" + encodeURIComponent(message(l.name, l.url));
+    wa.target = "_blank"; wa.rel = "noopener noreferrer"; wa.textContent = "💬 Enviar por WhatsApp";
+    wa.addEventListener("click", () => setTimeout(() => markSent(i), 300));
+
+    const cp = document.createElement("button"); cp.className = "btn icon"; cp.textContent = "📋";
+    cp.title = "Copiar enlace"; cp.setAttribute("aria-label", "Copiar enlace");
+    cp.addEventListener("click", async () => {
+      const ok = await copyText(message(l.name, l.url));
+      toast(ok ? "Enlace de " + l.name + " copiado" : "No se pudo copiar");
+      if (ok) markSent(i);
+    });
+    act.append(wa, cp);
+
+    if (navigator.share) {
+      const sh = document.createElement("button"); sh.className = "btn icon"; sh.textContent = "📤";
+      sh.title = "Compartir (Telegram, SMS…)"; sh.setAttribute("aria-label", "Compartir");
+      sh.addEventListener("click", async () => {
+        try { await navigator.share({ text: message(l.name, l.url) }); markSent(i); } catch (e) {}
+      });
+      act.append(sh);
+    }
+    card.append(head, act); box.append(card);
+  });
+}
+
+/* ===================== PANTALLA DEL JUGADOR ===================== */
+let hideTimer = null, current = null;
+function hideRole() {
+  clearTimeout(hideTimer); hideTimer = null;
+  $("#roleBox").hidden = true; $("#hideBtn").hidden = true; $("#revealBtn").hidden = false;
+  $("#roleContent").innerHTML = "";
+}
+function showRole() {
+  const d = current, box = $("#roleBox"), c = $("#roleContent");
+  c.innerHTML = "";
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); e.className = cls; e.textContent = txt; return e; };
+  c.append(el("div", "label", d.n));
+  if (d.i) {
+    box.className = "reveal imp";
+    c.append(el("div", "ico", "🔪"), el("div", "label", "Eres el"), el("div", "big", "IMPOSTOR"));
+    if (typeof d.h === "string") c.append(el("div", "hint", d.h ? "Pista: " + d.h : "Esta vez no hay pista"));
+    c.append(el("div", "tapsub", "Disimula y averigua la palabra."));
+  } else {
+    box.className = "reveal ok";
+    c.append(el("div", "ico", "🤫"), el("div", "label", "Tu palabra es:"), el("div", "big", d.w));
+    c.append(el("div", "tapsub", "Encuentra al impostor sin decir la palabra."));
+  }
+  $("#revealBtn").hidden = true; box.hidden = false; $("#hideBtn").hidden = false;
+  // barra de cuenta atrás
+  const bar = $("#timerBar");
+  bar.style.transition = "none"; bar.style.transform = "scaleX(1)";
+  void bar.offsetWidth;
+  bar.style.transition = "transform " + REVEAL_MS + "ms linear"; bar.style.transform = "scaleX(0)";
+  clearTimeout(hideTimer); hideTimer = setTimeout(hideRole, REVEAL_MS);
+}
+function renderPlayer(token) {
+  hideRole();
+  $("#pOk").hidden = true; $("#pOld").hidden = true; $("#pBad").hidden = true;
+  let d;
+  try {
+    d = deobfuscate(token);
+    if (d.v !== 1 || !d.n || !d.g || typeof d.r !== "number" || (!d.i && !d.w)) throw new Error("datos");
+  } catch (e) { $("#pBad").hidden = false; return; }
+
+  const key = "imp_latest_" + d.g, latest = store.get(key, 0);
+  if (latest && d.r < latest) { $("#pOld").hidden = false; return; }
+  if (d.r > latest) store.set(key, d.r);
+
+  current = d;
+  $("#pOk").hidden = false;
+  $("#pName").textContent = d.n;
+  $("#pRound").textContent = "Ronda " + (d.q || 1) + " · tu rol secreto";
+  const info = $("#pInfo"); info.innerHTML = "";
+  const line = (emo, txt) => { const p = document.createElement("div"); p.textContent = emo + " " + txt; info.append(p); };
+  line("👥", d.p + " jugadores");
+  line("🔪", d.k + (d.k === 1 ? " impostor" : " impostores"));
+  if (d.s) line("🎤", "Empieza hablando: " + d.s);
+}
+
+/* ===================== NAVEGACIÓN ===================== */
+function show(id) {
+  ["setup", "share", "player"].forEach(s => $("#" + s).hidden = s !== id);
+  window.scrollTo(0, 0);
+}
+function route() {
+  const h = location.hash.slice(1);
+  if (h.startsWith("j=")) { show("player"); renderPlayer(h.slice(2)); return; }
+  hideRole(); current = null;
+  if (S.game && S.view === "share") { renderShare(); show("share"); }
+  else { renderSetup(); show("setup"); }
+}
+
+/* ===================== EVENTOS ===================== */
+$("#addPlayer").addEventListener("click", addPlayer);
+$("#impMinus").addEventListener("click", () => { S.impostors--; save(); updateCounts(); });
+$("#impPlus").addEventListener("click", () => { S.impostors++; save(); updateCounts(); });
+document.querySelectorAll(".seg button").forEach(b =>
+  b.addEventListener("click", () => { S.mode = b.dataset.mode; save(); renderWordMode(); }));
+$("#manualWord").addEventListener("input", e => { S.word = e.target.value; save(); });
+$("#manualHint").addEventListener("input", e => { S.hint = e.target.value; save(); });
+$("#showHint").addEventListener("change", e => { S.showHint = e.target.checked; save(); });
+
+$("#createBtn").addEventListener("click", () => {
+  if (createGame()) { S.view = "share"; save(); renderShare(); show("share"); }
+});
+$("#newRound").addEventListener("click", () => {
+  const pending = S.game.sent.filter(s => !s).length;
+  if (pending && !confirm("Aún no has enviado " + pending + " enlace(s). ¿Crear una ronda nueva de todos modos?")) return;
+  if (S.game.manual) {
+    // Palabra escrita a mano: hay que escribir otra
+    S.mode = "manual"; S.view = "setup"; save(); renderSetup(); show("setup");
+    toast("Escribe la palabra de la nueva ronda"); $("#manualWord").focus();
+    return;
+  }
+  if (createGame()) { renderShare(); show("share"); toast("Ronda " + S.game.roundNum + " creada"); }
+});
+$("#editGame").addEventListener("click", () => { S.view = "setup"; save(); renderSetup(); show("setup"); });
+
+$("#revealBtn").addEventListener("click", showRole);
+$("#hideBtn").addEventListener("click", hideRole);
+$("#ownGame").addEventListener("click", () => {
+  history.replaceState(null, "", location.pathname + location.search);
+  route();
+});
+// Si se cambia de app o se bloquea la pantalla, se tapa el rol
+document.addEventListener("visibilitychange", () => { if (document.hidden) hideRole(); });
+window.addEventListener("hashchange", route);
+
+route();
+</script>
+</body>
+</html>
