@@ -3,322 +3,479 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0e1016">
+<meta name="theme-color" content="#0f172a">
+<meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>El Impostor</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Instrument+Sans:wght@400..700&display=swap">
 <style>
+  /* Concepto: cada jugador recibe un billete de rasca.
+     Cobalto (fondo), amarillo (acción), papel y tinta (billetes), plata (capa que se rasca), rosa (sellos). */
   :root{
-    --bg:#0e1016; --card:#171a23; --card2:#212532; --line:#2c3142;
-    --text:#eef0f6; --muted:#9aa1b2; --accent:#7c5cff;
-    --green:#22c55e; --red:#ef4444; --wa:#25d366;
+    color-scheme:dark;
+    --cobalt:#0f172a; --deep:#1e293b; --deeper:#0b1222; --line:rgba(255,255,255,.14);
+    --yellow:#ffffff; --yellow-edge:#cbd5e1; --pink:#dc2626; --silver:#c9ced8;
+    --paper:#ffffff; --ink:#0f172a; --ink-soft:#475569; --text:#ffffff; --muted:#94a3b8; --wa:#25d366;
+    --display:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;
+    --ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:var(--text);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px}
-  body{min-height:100vh;min-height:100dvh}
+  html,body{margin:0;color:var(--text);font-family:var(--ui);font-size:16px;-webkit-font-smoothing:antialiased}
+  html{background:var(--cobalt);scroll-padding-bottom:150px}
+  body{min-height:100vh;min-height:100dvh;background:var(--cobalt)}
   [hidden]{display:none!important}
-  .wrap{max-width:520px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom))}
-  header.top{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
-  header.top .logo{font-size:38px;line-height:1}
-  header.top h1{font-size:26px;margin:0}
-  header.top p{margin:2px 0 0;color:var(--muted);font-size:14px}
+  button,a,input,label,summary{touch-action:manipulation}
+  .wrap{max-width:500px;margin:0 auto;padding:22px 16px calc(130px + env(safe-area-inset-bottom))}
+  h1,h2{text-wrap:balance}
+  :focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
-  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
-    margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
-  .card h2 small{text-transform:none;letter-spacing:0;font-weight:500}
+  /* Tipografía */
+  .title{font-family:var(--display);font-weight:400;font-size:40px;line-height:.95;margin:0;letter-spacing:-.01em;
+    color:var(--text)}
+  .lede{margin:12px 0 0;color:var(--muted);font-size:16px;line-height:1.45;max-width:38ch}
+  .panel h2{font-size:18px;font-weight:700;margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .pill{font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)}
-  .small{font-size:13px}
+  .small{font-size:14px;line-height:1.45}
+  .note{margin:12px 0 0}
 
-  input[type=text]{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);
-    border-radius:12px;padding:14px;font-size:17px;outline:none;min-height:52px}
-  input[type=text]:focus{border-color:var(--accent)}
-  input::placeholder{color:#666d80}
+  /* Paneles (azul plano) */
+  .panel{background:var(--deep);border-radius:22px;padding:18px;margin-bottom:12px}
+  header.top{margin:8px 0 20px}
+
+  /* Campos */
+  input[type=text]{width:100%;background:var(--deeper);border:2px solid transparent;color:var(--text);
+    border-radius:14px;padding:12px 14px;font-size:17px;outline:none;min-height:50px;font-family:inherit;
+    transition:border-color .15s}
+  input[type=text]:focus-visible{border-color:var(--yellow)}
+  input::placeholder{color:#7c8aa0}
   .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-  .row .num{width:22px;color:var(--muted);font-size:14px;text-align:right;flex:none}
+  .row.new{animation:rowIn .28s cubic-bezier(.2,.9,.3,1.2)}
+  .row .num{width:20px;flex:none;text-align:right;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
 
-  .btn{appearance:none;border:0;border-radius:14px;padding:14px 16px;font-size:17px;font-weight:700;color:var(--text);
-    background:var(--card2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    text-decoration:none;min-height:52px;font-family:inherit;transition:transform .08s,opacity .2s}
+  /* Botones: amarillo con canto, se hunden al pulsarlos */
+  .btn{appearance:none;border:0;border-radius:16px;padding:12px 16px;font-size:17px;font-weight:700;color:var(--text);
+    background:var(--deeper);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    text-decoration:none;min-height:50px;font-family:inherit;transition:transform .08s, box-shadow .08s, background-color .15s, opacity .2s}
+  .btn:hover{background:#273449}
   .btn:active{transform:scale(.97)}
-  .btn.primary{background:linear-gradient(135deg,#8b6dff,#5b3df5);color:#fff;box-shadow:0 8px 24px rgba(91,61,245,.35)}
+  .btn.primary{background:var(--yellow);color:var(--ink)}
+  .btn.primary:hover{background:#e2e8f0}
   .btn.block{width:100%}
-  .btn.ghost{background:transparent;border:1px solid var(--line)}
-  .btn.icon{width:52px;padding:0;flex:none;font-size:20px}
-  .btn.wa{background:var(--wa);color:#052e16}
-  .btn.big{min-height:62px;font-size:19px}
+  .btn.ghost{background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
+  .btn.ghost:hover{background:rgba(255,255,255,.06)}
+  .btn.icon{width:50px;padding:0;flex:none;font-size:20px}
+  .btn.big{min-height:60px;font-size:19px}
+  .btn.wa{background:var(--wa);color:#04260f;white-space:nowrap}
+  .btn.wa:hover{background:#3ae07a}
+  .btn.link{min-height:40px;padding:6px 10px;background:transparent;color:var(--ink-soft);font-size:14px;font-weight:600;text-decoration:underline}
+  .btn.link:hover{background:rgba(15,23,42,.06)}
   .btn[disabled]{opacity:.35;pointer-events:none}
 
   .stepper{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .stepper .val{font-size:34px;font-weight:800;min-width:50px;text-align:center}
+  .stepper .val{font-family:var(--display);font-size:44px;min-width:64px;text-align:center;line-height:1;font-variant-numeric:tabular-nums}
+  .pop{animation:pop .28s cubic-bezier(.3,1.6,.5,1)}
 
-  .seg{display:flex;background:var(--card2);border-radius:14px;padding:4px;margin-bottom:14px}
-  .seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:12px;border-radius:10px;
-    font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
-  .seg button.on{background:var(--accent);color:#fff}
+  .seg{display:flex;background:var(--deeper);border-radius:14px;padding:4px;margin-bottom:14px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:11px;border-radius:11px;
+    font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background-color .15s, color .15s}
+  .seg button.on{background:var(--yellow);color:var(--ink)}
 
   .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .chip{border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:14px;padding:12px 4px;
-    font-size:14px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-family:inherit}
-  .chip span{font-size:24px}
-  .chip.on{border-color:var(--accent);background:rgba(124,92,255,.2)}
+  .chip{border:0;background:var(--deeper);color:var(--text);border-radius:14px;padding:11px 4px;
+    font-size:14px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-family:inherit;
+    transition:background-color .15s, color .15s, transform .08s}
+  .chip:hover{background:#273449}
+  .chip:active{transform:scale(.95)}
+  .chip span{font-size:24px;line-height:1;display:block}
+  .chip.on{background:var(--yellow);color:var(--ink)}
+  .chip.on span{animation:hop .4s cubic-bezier(.3,1.6,.5,1)}
 
   .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
-  .switch input{display:none}
-  .switch .track{width:56px;height:32px;border-radius:16px;background:var(--card2);border:1px solid var(--line);
-    position:relative;flex:none;transition:background .2s}
-  .switch .track::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
-    background:#fff;transition:transform .2s}
-  .switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
-  .switch input:checked + .track::after{transform:translateX(24px)}
+  .switch input{position:absolute;opacity:0;width:1px;height:1px}
+  .switch .track{width:56px;height:32px;border-radius:16px;background:var(--deeper);position:relative;flex:none;transition:background-color .2s}
+  .switch .track::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;
+    background:#fff;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+  .switch input:checked + .track{background:var(--yellow)}
+  .switch input:checked + .track::after{transform:translateX(24px);background:var(--ink)}
+  .switch input:focus-visible + .track{outline:3px solid var(--yellow);outline-offset:3px}
 
-  .bottom{position:fixed;left:0;right:0;bottom:0;padding:24px 16px calc(14px + env(safe-area-inset-bottom));
-    background:linear-gradient(rgba(14,16,22,0),var(--bg) 35%);z-index:5}
-  .bottom .in{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+  .bottom{position:fixed;left:0;right:0;bottom:0;padding:24px 16px calc(16px + env(safe-area-inset-bottom));
+    background:linear-gradient(rgba(15,23,42,0),var(--cobalt) 40%);z-index:5}
+  .bottom .in{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
 
-  .warn{background:rgba(234,179,8,.12);border:1px solid rgba(234,179,8,.4);color:#fde68a;border-radius:14px;
-    padding:12px 14px;font-size:14px;margin-bottom:14px}
+  .warn{background:var(--yellow);color:var(--ink);border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:12px;font-weight:600}
 
-  /* Pantalla de enlaces */
-  .stats{display:flex;gap:8px;margin-bottom:14px}
-  .stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
-  .stat b{display:block;font-size:22px}
-  .stat span{font-size:12px;color:var(--muted)}
-  .player{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px;transition:border-color .2s}
-  .player.sent{border-color:rgba(34,197,94,.55)}
-  .player .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
-  .player .name{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--muted);flex:none}
-  .player.sent .badge{background:rgba(34,197,94,.18);color:#86efac}
-  .player .actions{display:flex;gap:8px}
-  .player .actions .wa{flex:1}
+  /* ===== Billetes (papel con muescas) ===== */
+  .ticket{position:relative;color:var(--ink);border-radius:20px;--cut:50%;
+    background:var(--paper);
+    -webkit-mask:radial-gradient(circle 13px at 0 var(--cut), #0000 12.5px, #000 13px) left/51% 100% no-repeat,
+                 radial-gradient(circle 13px at 100% var(--cut), #0000 12.5px, #000 13px) right/51% 100% no-repeat;
+            mask:radial-gradient(circle 13px at 0 var(--cut), #0000 12.5px, #000 13px) left/51% 100% no-repeat,
+                 radial-gradient(circle 13px at 100% var(--cut), #0000 12.5px, #000 13px) right/51% 100% no-repeat}
 
-  /* Pantalla del jugador */
-  .hello{text-align:center;margin:10px 0 16px}
-  .hello .who{font-size:30px;font-weight:800;margin-top:4px;word-break:break-word}
-  .reveal{min-height:330px;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:24px;margin-bottom:14px;width:100%;font-family:inherit;color:var(--text)}
-  button.reveal{cursor:pointer;border:2px dashed #3a4057;
-    background:repeating-linear-gradient(45deg,#171a23,#171a23 14px,#1b1f2a 14px,#1b1f2a 28px)}
-  button.reveal:active{transform:scale(.985)}
-  .reveal .ico{font-size:64px;margin-bottom:12px}
-  .reveal .tap{font-size:24px;font-weight:800}
-  .reveal .tapsub{color:var(--muted);margin-top:8px;font-size:14px}
-  .reveal.imp{background:radial-gradient(circle at 50% 30%,#4a0f16,#1a0709 75%);border:2px solid var(--red);color:#fecaca}
-  .reveal.ok{background:radial-gradient(circle at 50% 30%,#0d3d22,#06180e 75%);border:2px solid var(--green);color:#bbf7d0}
-  .reveal .label{font-size:18px;font-weight:600;opacity:.9}
-  .reveal .big{font-size:42px;font-weight:900;line-height:1.1;margin:8px 0;word-break:break-word}
-  .reveal.imp .big{color:var(--red);letter-spacing:.04em;font-size:46px}
-  .reveal.ok .big{color:var(--green)}
-  .reveal .hint{margin-top:10px;font-size:17px;background:rgba(0,0,0,.3);padding:8px 14px;border-radius:12px}
-  .timer{height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;width:100%;margin-top:22px}
-  .timer i{display:block;height:100%;width:100%;background:currentColor;transform-origin:left}
-  .rules ol{margin:0;padding-left:20px;line-height:1.5;color:#d4d8e3}
-  .rules li{margin-bottom:6px}
+  /* Rasca */
+  .scratch{position:relative;border-radius:14px;overflow:hidden;background:#f1f5f9}
+  .scratch canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:pointer;
+    transition:opacity .45s ease}
+  .scratch canvas.gone{opacity:0;pointer-events:none}
+  .scratch .under{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px}
+
+  /* Billete del jugador */
+  .pticket{--cut:94px;margin:6px 0 14px;transition:transform .25s, opacity .25s}
+  .pticket .t-head{height:94px;padding:18px 22px 0;display:flex;justify-content:space-between;align-items:flex-start}
+  .pticket .brand{font-family:var(--display);font-size:20px;color:var(--cobalt);line-height:1}
+  .pticket .holder{font-size:15px;color:var(--ink-soft);margin-top:6px;font-weight:600;max-width:24ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pticket .rnd{text-align:right;font-size:13px;font-weight:700;color:var(--ink-soft);line-height:1}
+  .pticket .rnd b{display:inline-block;font-family:var(--display);font-weight:400;font-size:40px;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums}
+  .pticket .t-body{border-top:2px dashed rgba(15,23,42,.22);margin:0 18px;padding:18px 0 14px}
+  .pticket .scratch{height:228px}
+  .role-k{font-size:15px;font-weight:600;color:var(--ink-soft);margin:0 0 6px}
+  .role-w{font-family:var(--display);font-weight:400;font-size:42px;line-height:1.05;color:var(--ink);word-break:break-word;margin:0}
+  .role-w.long{font-size:32px}
+  .role-s{font-size:15px;color:var(--ink-soft);margin:12px auto 0;max-width:30ch;line-height:1.4}
+  .role-h{display:inline-block;margin-top:10px;font-weight:700;font-size:16px;color:var(--ink);background:rgba(15,23,42,.08);padding:5px 12px;border-radius:999px}
+  .t-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;min-height:40px}
+  .t-foot .hint{font-size:14px;color:var(--ink-soft);font-weight:600}
+  .cover{height:4px;border-radius:2px;background:rgba(15,23,42,.12);overflow:hidden;margin-top:12px}
+  .cover i{display:block;height:100%;background:var(--ink);opacity:.5;transform-origin:left;transform:scaleX(0)}
+  .pticket.swap-out{transform:translateX(-115%) rotate(-8deg);opacity:0}
+  .pticket.swap-in{animation:swapIn .32s cubic-bezier(.2,.9,.3,1.15)}
+
+  /* Partículas al destapar (iguales para todos los roles: no delatan a nadie) */
+  .tk-wrap{position:relative}
+  .burst{position:absolute;left:50%;top:60%;width:0;height:0;pointer-events:none;z-index:3}
+  .burst i{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:2px}
+
+  /* ===== Pantalla de billetes del anfitrión ===== */
+  .summary{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:4px 0 8px;font-variant-numeric:tabular-nums}
+  .summary b{font-size:16px}
+  .progress{height:8px;border-radius:4px;background:var(--deeper);overflow:hidden;margin-bottom:18px}
+  .progress i{display:block;height:100%;width:0;background:var(--yellow);border-radius:4px;transition:width .35s cubic-bezier(.3,1.3,.5,1)}
+  .stub{--cut:50%;padding:14px 18px;margin-bottom:12px}
+  .stub.deal{animation:deal .45s cubic-bezier(.2,.9,.3,1.1) backwards}
+  .stub .head{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-width:0}
+  .avatar{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:18px;color:#fff;background:var(--cobalt)}
+  .stub .name{flex:1;min-width:0;font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stub .state{font-size:13px;font-weight:600;color:var(--ink-soft);flex:none}
+  .stub .actions{display:flex;gap:8px}
+  .stub .actions .wa{flex:1}
+  .stub .actions .icon{background:#f1f5f9;color:var(--ink)}
+  .stub .actions .icon:hover{background:#e2e8f0}
+  .stamp{position:absolute;right:16px;top:12px;font-family:var(--display);font-size:17px;color:var(--pink);
+    border:3px solid var(--pink);border-radius:8px;padding:2px 10px;transform:rotate(-8deg);background:rgba(255,253,246,.9)}
+  .stamp.fresh{animation:stamp .38s cubic-bezier(.3,1.6,.5,1)}
+
+  .roster{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+  .roster span{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border-radius:999px;padding:3px 10px 3px 3px;font-size:14px;font-weight:600}
+  .roster .avatar{width:24px;height:24px;font-size:12px}
+  .stub .summ{font-size:14px;color:var(--ink-soft);margin:-4px 0 10px;font-weight:600}
+  .picks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pick{--cut:50%;border:0;font:inherit;cursor:pointer;display:flex;align-items:center;gap:10px;padding:16px 18px;text-align:left;
+    font-size:18px;font-weight:700;color:var(--ink);min-height:74px;min-width:0;transition:transform .08s}
+  .pick:active{transform:scale(.96)}
+  .pick:hover{filter:brightness(.97)}
+  .pick .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pick.deal{animation:deal .4s cubic-bezier(.2,.9,.3,1.1) backwards}
+  .roundbar{display:flex;gap:8px;margin-bottom:12px}
+  .roundbar .primary{flex:1}
+  .stack{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .sol-out{margin-top:12px;padding:14px;border-radius:14px;background:var(--deeper);line-height:1.55}
+  .sol-out b{color:var(--yellow)}
+
+  /* Turnos */
+  .order{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+  .order li button{border:0;font-family:inherit;cursor:pointer;background:var(--deeper);color:var(--text);border-radius:999px;
+    padding:8px 14px;font-size:15px;font-weight:600;transition:background-color .2s, color .2s, transform .2s}
+  .order li button .n{color:var(--muted);margin-right:5px;font-variant-numeric:tabular-nums}
+  .order li button.now{background:var(--yellow);color:var(--ink);transform:scale(1.08)}
+  .order li button.now .n{color:var(--ink-soft)}
+  .order li button.done{opacity:.55}
+
+  /* Temporizador en anillo */
+  .clock{position:relative;width:180px;height:180px;margin:4px auto 14px}
+  .clock svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .clock .track{fill:none;stroke:var(--deeper);stroke-width:12}
+  .clock .prog{fill:none;stroke:var(--yellow);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+  .clock .time{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:46px;font-variant-numeric:tabular-nums}
+  .clock.urgent .prog{stroke:var(--pink)}
+  .clock.urgent .time{animation:pulse 1s ease-in-out infinite}
+  .tm-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+  .tm-opts .chip{padding:9px 4px;font-size:15px}
+  .tm-actions{display:flex;gap:8px}
+  .tm-actions .btn{flex:1}
+
+  details.rules summary{cursor:pointer;font-size:18px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  details.rules summary::-webkit-details-marker{display:none}
+  details.rules summary::after{content:"＋";color:var(--muted);transition:transform .2s}
+  details.rules[open] summary::after{transform:rotate(45deg)}
+  details.rules ol{margin:12px 0 0;padding-left:22px;line-height:1.5;color:#e4e9ff}
+  details.rules li{margin-bottom:6px}
   .center{text-align:center}
-  .state{text-align:center;padding:30px 10px}
-  .state .ico{font-size:64px}
-  .state h2{margin:12px 0 8px;font-size:24px}
+  .empty{text-align:center;padding:40px 14px}
+  .empty .ico{font-size:60px}
+  .empty h2{font-family:var(--display);font-weight:400;margin:12px 0 8px;font-size:30px}
 
-  .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
-    background:#fff;color:#111;padding:12px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;
-    transition:all .25s;z-index:20;max-width:90vw;text-align:center}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translate(-50%,16px);
+    background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;opacity:0;pointer-events:none;
+    transition:opacity .2s, transform .2s;z-index:20;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @keyframes rowIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+  @keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-7px) rotate(-8deg)}100%{transform:translateY(0)}}
+  @keyframes deal{from{opacity:0;transform:translateY(40px) rotate(4deg) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes stamp{from{opacity:0;transform:rotate(-8deg) scale(2)}to{opacity:1;transform:rotate(-8deg) scale(1)}}
+  @keyframes swapIn{from{opacity:0;transform:translateX(60%) rotate(6deg)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  @keyframes shake{0%,100%{transform:none}20%{transform:rotate(-1.5deg)}40%{transform:rotate(1.2deg)}60%{transform:rotate(-.8deg)}80%{transform:rotate(.4deg)}}
+  .shake{animation:shake .45s ease-out}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
 <!-- ============ PREPARACIÓN ============ -->
-<section id="setup" class="wrap" hidden>
+<main id="setup" class="wrap" hidden>
   <header class="top">
-    <div class="logo">🕵️</div>
-    <div><h1>El Impostor</h1><p>Prepara la partida y manda a cada uno su enlace</p></div>
+    <h1 class="title">El Impostor</h1>
+    <p class="lede">Todos tenéis la misma palabra menos uno. Descubrid quién miente.</p>
   </header>
 
   <div id="fileWarn" class="warn" hidden>
-    ⚠️ Estás abriendo el archivo en local. Los enlaces solo funcionarán en otros móviles si la página está alojada en internet (GitHub Pages, Netlify…).
+    Estás abriendo el archivo en local: los enlaces no funcionarán en otros móviles. Abre la versión publicada en internet.
   </div>
 
-  <div class="card">
-    <h2>Jugadores <small id="countPlayers"></small></h2>
+  <section class="panel" aria-labelledby="hPlayers">
+    <h2 id="hPlayers">Jugadores <span class="pill" id="countPlayers"></span></h2>
     <div id="playerList"></div>
     <button id="addPlayer" class="btn ghost block">＋ Añadir jugador</button>
-  </div>
+  </section>
 
-  <div class="card">
-    <h2>Impostores <small id="maxImp"></small></h2>
+  <section class="panel" aria-labelledby="hImp">
+    <h2 id="hImp">Impostores <span class="pill" id="maxImp"></span></h2>
     <div class="stepper">
       <button id="impMinus" class="btn icon" aria-label="Menos impostores">−</button>
-      <div class="val" id="impVal">1</div>
+      <div class="val" id="impVal" aria-live="polite">1</div>
       <button id="impPlus" class="btn icon" aria-label="Más impostores">＋</button>
     </div>
-  </div>
+  </section>
 
-  <div class="card">
-    <h2>Palabra</h2>
-    <div class="seg">
-      <button data-mode="cat">🎲 Categoría</button>
-      <button data-mode="manual">✍️ Escribirla yo</button>
+  <section class="panel" aria-labelledby="hWords">
+    <h2 id="hWords">Palabras</h2>
+    <div class="seg" role="group" aria-label="Cómo se elige la palabra">
+      <button data-mode="cat">Al azar</button>
+      <button data-mode="manual">La escribo yo</button>
     </div>
     <div id="catBox"><div class="chips" id="chips"></div>
-      <p class="muted small" style="margin:10px 0 0">Se elige una palabra al azar. Nadie la verá en esta pantalla.</p>
+      <p class="muted small note">Una palabra distinta en cada ronda. Nadie la ve en esta pantalla.</p>
     </div>
     <div id="manualBox" hidden>
-      <input type="text" id="manualWord" placeholder="Palabra secreta" autocomplete="off" maxlength="40">
+      <input type="text" id="manualWord" name="palabra" placeholder="Palabra secreta, p. ej. Submarino…" autocomplete="off" spellcheck="false" maxlength="40" aria-label="Palabra secreta">
       <div style="height:8px"></div>
-      <input type="text" id="manualHint" placeholder="Pista para el impostor (opcional, ej.: Comida)" autocomplete="off" maxlength="40">
-      <p class="muted small" style="margin:10px 0 0">Si escribes tú la palabra, no deberías jugar esta ronda (ya la sabes).</p>
+      <input type="text" id="manualHint" name="pista" placeholder="Pista para el impostor, p. ej. Lugares…" autocomplete="off" maxlength="40" aria-label="Pista para el impostor (opcional)">
+      <p class="muted small note">Si escribes tú la palabra, no juegues esta ronda: ya la sabes. Con palabra escrita hay que repartir billetes nuevos cada ronda.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="card">
+  <section class="panel">
     <label class="switch">
-      <div><b>Pista para el impostor</b><div class="muted small">Verá la categoría de la palabra</div></div>
-      <input type="checkbox" id="showHint"><span class="track"></span>
+      <span><b>Pista para el impostor</b><span class="muted small" style="display:block">Verá la categoría de la palabra</span></span>
+      <input type="checkbox" id="showHint" name="pista-impostor"><span class="track" aria-hidden="true"></span>
     </label>
-  </div>
+  </section>
 
   <div class="bottom"><div class="in">
-    <button id="createBtn" class="btn primary block big">Crear partida</button>
+    <button id="createBtn" class="btn primary block big">Repartir billetes</button>
   </div></div>
-</section>
+</main>
 
-<!-- ============ ENLACES ============ -->
-<section id="share" class="wrap" hidden>
+<!-- ============ BILLETES (ANFITRIÓN) ============ -->
+<main id="share" class="wrap" hidden>
   <header class="top">
-    <div class="logo">📨</div>
-    <div><h1 id="roundTitle">Ronda 1</h1><p>Envía a cada jugador su enlace personal</p></div>
+    <h1 class="title" id="roundTitle">Billetes listos</h1>
+    <p class="lede" id="shareSub"></p>
   </header>
 
   <div id="fileWarn2" class="warn" hidden>
-    ⚠️ Página abierta en local: estos enlaces no abrirán en otros móviles. Aloja el archivo en internet primero.
-  </div>
-
-  <div class="stats">
-    <div class="stat"><b id="stPlayers">0</b><span>jugadores</span></div>
-    <div class="stat"><b id="stImp">0</b><span>impostores</span></div>
-    <div class="stat"><b id="stSent">0</b><span>enviados</span></div>
+    Página abierta en local: estos enlaces no abrirán en otros móviles. Usa la versión publicada.
   </div>
 
   <div id="links"></div>
+  <button id="openMine" class="btn block" style="margin-bottom:14px">Abrir mi billete</button>
 
-  <p class="muted small center">La palabra y los impostores no se muestran aquí, así que tú también puedes jugar. Abre tu propio enlace para ver tu rol.</p>
+  <p class="muted small center" id="shareNote"></p>
+
+  <section class="panel" id="hostSol" aria-labelledby="hSol" hidden>
+    <h2 id="hSol">Solución <span class="pill">solo en tu móvil</span></h2>
+    <div id="solRoundRow" class="stepper" style="margin-bottom:12px">
+      <button id="solMinus" class="btn icon" aria-label="Ronda anterior">−</button>
+      <div class="center"><div class="muted small">Ronda</div><div class="val" id="solRoundVal">1</div></div>
+      <button id="solPlus" class="btn icon" aria-label="Ronda siguiente">＋</button>
+    </div>
+    <button id="solBtn" class="btn block">Ver la solución</button>
+    <div id="solOut" class="sol-out" hidden aria-live="polite"></div>
+    <p class="muted small note">Para después de votar. Muestra la palabra y quién era el impostor; que no lo vean los demás.</p>
+  </section>
 
   <div class="bottom"><div class="in">
-    <button id="newRound" class="btn primary block big">🔄 Nueva ronda</button>
-    <button id="editGame" class="btn ghost block">✏️ Cambiar jugadores o ajustes</button>
+    <button id="newRound" class="btn primary block big">Nueva ronda</button>
+    <button id="editGame" class="btn ghost block">Cambiar jugadores o ajustes</button>
   </div></div>
-</section>
+</main>
+
+<!-- ============ ELEGIR JUGADOR ============ -->
+<main id="pick" class="wrap" hidden>
+  <header class="top">
+    <h1 class="title">¿Quién eres?</h1>
+    <p class="lede" id="pickSub"></p>
+  </header>
+  <div class="picks" id="pickList"></div>
+  <p class="muted small center note">Este móvil recordará tu nombre para el resto de la partida.</p>
+</main>
 
 <!-- ============ JUGADOR ============ -->
-<section id="player" class="wrap" hidden>
+<main id="player" class="wrap" hidden>
   <div id="pOk">
-    <div class="hello">
-      <div class="muted" id="pRound">Ronda</div>
-      <div class="who" id="pName"></div>
+    <div class="tk-wrap">
+    <article class="ticket pticket" id="pTicket" aria-labelledby="pName">
+      <div class="t-head">
+        <div><div class="brand">El Impostor</div><div class="holder">Billete de <span id="pName"></span></div></div>
+        <div class="rnd">Ronda<b id="pRound">1</b></div>
+      </div>
+      <div class="t-body">
+        <div class="scratch">
+          <div class="under" id="roleContent"></div>
+          <canvas id="roleScratch" aria-hidden="true"></canvas>
+        </div>
+        <div class="t-foot">
+          <span class="hint" id="scratchHint">Rasca con el dedo. Que nadie más mire.</span>
+          <button id="revealBtn" class="btn link">Destapar sin rascar</button>
+          <button id="hideBtn" class="btn link" hidden>Tapar</button>
+        </div>
+        <div class="cover" aria-hidden="true"><i id="coverBar"></i></div>
+      </div>
+    </article>
+    <div class="burst" id="burst" aria-hidden="true"></div>
     </div>
 
-    <button id="revealBtn" class="reveal">
-      <div class="ico">👆</div>
-      <div class="tap">Toca para ver tu rol</div>
-      <div class="tapsub">Asegúrate de que nadie mira tu pantalla</div>
-    </button>
-
-    <div id="roleBox" class="reveal" hidden>
-      <div id="roleContent"></div>
-      <div class="timer"><i id="timerBar"></i></div>
+    <div id="roundCtl" class="roundbar" hidden>
+      <button id="prevRound" class="btn icon" aria-label="Volver a la ronda anterior">−</button>
+      <button id="nextRound" class="btn primary">Siguiente ronda</button>
     </div>
 
-    <button id="hideBtn" class="btn block big" hidden>🙈 Ocultar</button>
+    <section class="panel" aria-labelledby="hOrder">
+      <h2 id="hOrder">Turnos <span class="pill" id="pInfo"></span></h2>
+      <ol class="order" id="orderList"></ol>
+      <button id="nextTurn" class="btn block">Siguiente turno</button>
+    </section>
 
-    <div class="card" style="margin-top:14px">
-      <h2>Esta partida</h2>
-      <div id="pInfo" style="line-height:1.6"></div>
-    </div>
+    <section class="panel" aria-labelledby="hTimer">
+      <h2 id="hTimer">Temporizador</h2>
+      <div class="tm-opts" id="tmOpts" role="group" aria-label="Duración"></div>
+      <div class="clock" id="clock">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="prog" id="tmRing" cx="60" cy="60" r="52"/></svg>
+        <div class="time" id="tmDisplay" role="timer">2:00</div>
+      </div>
+      <div class="tm-actions">
+        <button id="tmStart" class="btn primary">Empezar</button>
+        <button id="tmReset" class="btn">Reiniciar</button>
+      </div>
+    </section>
 
-    <div class="card rules">
-      <h2>Reglas rápidas</h2>
+    <details class="panel rules">
+      <summary>Cómo se juega</summary>
       <ol>
-        <li>Todos tienen la misma palabra secreta… menos el impostor, que no la sabe.</li>
+        <li>Todos tenéis la misma palabra secreta, menos el impostor, que no la sabe.</li>
         <li>Por turnos, cada uno dice <b>una palabra</b> relacionada con la secreta, sin decirla.</li>
         <li>El impostor tiene que disimular y deducir de qué se habla.</li>
         <li>Tras una o dos vueltas, votad a quién creéis que es el impostor.</li>
-        <li>Si lo pilláis, gana el grupo. Si no lo pilláis —o si adivina la palabra— gana el impostor.</li>
+        <li>Si lo pilláis, gana el grupo. Si no lo pilláis, o si adivina la palabra, gana el impostor.</li>
       </ol>
-    </div>
+    </details>
   </div>
 
-  <div id="pOld" class="state" hidden>
-    <div class="ico">⌛</div>
+  <div id="pOld" class="empty" hidden>
+    <div class="ico" aria-hidden="true">⌛</div>
     <h2>Ronda antigua</h2>
-    <p class="muted">Este enlace es de una ronda anterior y ya hay una más nueva. Busca el último enlace que te han enviado.</p>
+    <p class="muted">Ya hay una ronda más nueva. Abre el último billete que te han mandado.</p>
   </div>
 
-  <div id="pBad" class="state" hidden>
-    <div class="ico">🤔</div>
-    <h2>Enlace no válido</h2>
-    <p class="muted">El enlace está incompleto o dañado. Pide que te lo vuelvan a enviar.</p>
+  <div id="pVer" class="empty" hidden>
+    <div class="ico" aria-hidden="true">🔄</div>
+    <h2>Partida de otra versión</h2>
+    <p class="muted">La página se ha actualizado desde que se creó esta partida. Pide que repartan billetes nuevos.</p>
   </div>
 
-  <div class="center" style="margin-top:8px">
-    <button id="ownGame" class="btn ghost">🕵️ Crear mi propia partida</button>
+  <div id="pBad" class="empty" hidden>
+    <div class="ico" aria-hidden="true">🎟️</div>
+    <h2>Billete incompleto</h2>
+    <p class="muted">Falta parte del enlace. Pide que te lo vuelvan a mandar y ábrelo entero.</p>
   </div>
-</section>
 
-<div id="toast" class="toast"></div>
+  <div class="stack" style="margin-top:8px">
+    <button id="notMe" class="btn ghost" hidden>No soy yo: cambiar de jugador</button>
+    <button id="ownGame" class="btn ghost">Crear mi propia partida</button>
+  </div>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
 
-/* ===================== DATOS ===================== */
+/* ===================== PALABRAS =====================
+   Elegidas para que se pueda jugar bien: cosas conocidas por todos, con muchos detalles que mencionar
+   y que no se adivinan con la primera pista. Fuera las demasiado genéricas (mesa, pan, silla…). */
 const CATS = {
   comida: { label: "Comida", emoji: "🍕", words: [
-    "Pizza","Paella","Tortilla de patatas","Hamburguesa","Sushi","Lasaña","Gazpacho","Croquetas","Churros",
-    "Helado","Chocolate","Queso","Jamón","Ensalada","Macarrones","Espaguetis","Tacos","Burrito","Kebab",
-    "Patatas fritas","Huevo frito","Pan","Cereales","Yogur","Tarta de queso","Donut","Palomitas","Salmorejo",
-    "Fabada","Cocido","Empanada","Pulpo a la gallega","Sandía","Plátano","Fresa","Naranja"]},
-  animales: { label: "Animales", emoji: "🐘", words: [
-    "Perro","Gato","Elefante","Jirafa","León","Tigre","Delfín","Tiburón","Ballena","Pingüino","Canguro",
-    "Koala","Oso panda","Cocodrilo","Serpiente","Águila","Búho","Loro","Caballo","Vaca","Cerdo","Oveja",
-    "Gallina","Conejo","Ratón","Murciélago","Mono","Gorila","Cebra","Hipopótamo","Rinoceronte","Tortuga",
-    "Pulpo","Abeja","Mariposa","Hormiga","Camello","Lobo","Zorro"]},
-  paises: { label: "Países", emoji: "🌍", words: [
-    "España","Francia","Italia","Portugal","Alemania","Reino Unido","Irlanda","Grecia","Suecia","Noruega",
-    "Rusia","China","Japón","India","Australia","Estados Unidos","Canadá","México","Brasil","Argentina",
-    "Chile","Perú","Colombia","Cuba","Egipto","Marruecos","Sudáfrica","Turquía","Corea del Sur","Tailandia",
-    "Suiza","Países Bajos","Islandia","Nueva Zelanda","Jamaica"]},
-  peliculas: { label: "Películas", emoji: "🎬", words: [
-    "Titanic","Avatar","El Rey León","Toy Story","Buscando a Nemo","Frozen","Shrek","Harry Potter",
-    "El Señor de los Anillos","Star Wars","Jurassic Park","Regreso al futuro","Matrix","Los Vengadores",
-    "Spider-Man","Batman","Piratas del Caribe","Indiana Jones","Tiburón","E.T.","Coco","Up","Del revés",
-    "Los Increíbles","Cars","Gru, mi villano favorito","Mamma Mia!","Grease","Barbie","Oppenheimer",
-    "Ocho apellidos vascos","Torrente","Campeones","El laberinto del fauno","Interstellar","Aladdín"]},
-  profesiones: { label: "Profesiones", emoji: "👩‍⚕️", words: [
-    "Médico","Enfermero","Profesor","Bombero","Policía","Abogado","Juez","Cocinero","Camarero","Peluquero",
-    "Fontanero","Electricista","Carpintero","Albañil","Arquitecto","Ingeniero","Piloto","Azafato","Astronauta",
-    "Veterinario","Dentista","Farmacéutico","Periodista","Fotógrafo","Actor","Cantante","Futbolista","Panadero",
-    "Carnicero","Agricultor","Pescador","Mecánico","Taxista","Cartero","Socorrista","Informático","Psicólogo","Científico"]},
+    "Paella","Sushi","Fondue","Croquetas","Churros con chocolate","Pulpo a la gallega","Ramen","Kebab",
+    "Roscón de Reyes","Turrón","Gazpacho","Fabada","Algodón de azúcar","Palomitas","Calçots","Ensaladilla rusa",
+    "Huevos rotos","Nachos","Tiramisú","Cocido madrileño","Tortilla de patatas","Pipas","Gominolas","Pizza con piña",
+    "Bocadillo de calamares","Ostras","Caracoles","Percebes","Fideuá","Uvas de Nochevieja","Barbacoa","Fondant de chocolate"]},
+  animales: { label: "Animales", emoji: "🦎", words: [
+    "Pingüino","Camaleón","Pulpo","Murciélago","Canguro","Perezoso","Flamenco","Ornitorrinco","Medusa","Mosquito",
+    "Cucaracha","Pavo real","Tiburón","Llama","Mapache","Erizo","Cigüeña","Avestruz","Caracol","Lobo","Gallina",
+    "Hámster","Delfín","Koala","Oso panda","Camello","Tortuga","Búho","Cocodrilo","Abeja","Loro","Jirafa"]},
+  lugares: { label: "Lugares", emoji: "🏰", words: [
+    "Aeropuerto","Hospital","Casino","Submarino","Biblioteca","Cementerio","Gimnasio","Discoteca","Zoo","Museo",
+    "Estación espacial","Crucero","Cárcel","Parque de atracciones","Camping","Estadio de fútbol","Peluquería","Ascensor",
+    "Supermercado","Spa","Iglesia","Autoescuela","Farmacia","Feria","Isla desierta","Castillo","Metro","Playa",
+    "Estación de esquí","Cine","Hotel","Granja"]},
   objetos: { label: "Objetos", emoji: "☂️", words: [
-    "Paraguas","Llave","Reloj","Gafas","Móvil","Mochila","Lámpara","Espejo","Tijeras","Cuchara","Tenedor",
-    "Sartén","Almohada","Manta","Silla","Mesa","Bolígrafo","Libro","Cartera","Peine","Cepillo de dientes",
-    "Toalla","Vela","Guitarra","Bicicleta","Mando de la tele","Auriculares","Cargador","Botella","Taza",
-    "Martillo","Escoba","Globo","Maleta","Calcetín"]},
-  deportes: { label: "Deportes", emoji: "⚽", words: [
-    "Fútbol","Baloncesto","Tenis","Pádel","Natación","Ciclismo","Atletismo","Boxeo","Judo","Kárate","Golf",
-    "Rugby","Balonmano","Voleibol","Esquí","Snowboard","Surf","Escalada","Patinaje","Gimnasia","Waterpolo",
-    "Béisbol","Hockey","Ajedrez","Bádminton","Tiro con arco","Esgrima","Remo","Piragüismo","Fórmula 1",
-    "Motociclismo","Triatlón","Maratón","Petanca","Ping-pong"]},
-  famosos: { label: "Famosos", emoji: "⭐", words: [
-    "Rafa Nadal","Leo Messi","Cristiano Ronaldo","Shakira","Rosalía","Bad Bunny","Taylor Swift","Michael Jackson",
-    "Elvis Presley","Madonna","Beyoncé","Lady Gaga","Antonio Banderas","Penélope Cruz","Leonardo DiCaprio",
-    "Brad Pitt","Tom Cruise","Pedro Almodóvar","Albert Einstein","Pablo Picasso","Salvador Dalí","Frida Kahlo",
-    "Cristóbal Colón","Napoleón","Cleopatra","Elon Musk","Bill Gates","Steve Jobs","Ibai Llanos","Fernando Alonso",
-    "Pau Gasol","Alejandro Sanz","Julio Iglesias","Lola Flores","Charles Chaplin","Marilyn Monroe","Usain Bolt"]}
+    "Paraguas","Espejo","Paracaídas","Brújula","Mando de la tele","Cepillo de dientes","Despertador","Bola de discoteca",
+    "Ventilador","Termómetro","Microondas","Linterna","Tijeras","Palo selfie","Patinete eléctrico","Tirita","Mechero",
+    "Peluca","Hucha","Lupa","Plancha","Secador de pelo","Pinza de la ropa","Imán","Globo","Candado","Maleta",
+    "Aspiradora","Chicle","Gafas de sol","Cargador del móvil","Dado"]},
+  profesiones: { label: "Profesiones", emoji: "🧑‍🚒", words: [
+    "Astronauta","Bombero","Payaso","Detective","Socorrista","Dentista","Cirujano","Mago","Influencer","Fontanero",
+    "Juez","Árbitro","Cura","Espía","Jardinero","Profesor de autoescuela","Repartidor","Peluquero","Panadero","Taxista",
+    "Veterinario","Chef","Paparazzi","Camarero","Guardia de seguridad","Tatuador","Funcionario","DJ",
+    "Presentador de televisión","Piloto de avión","Monitor de gimnasio","Abogado"]},
+  cine: { label: "Cine y series", emoji: "🎬", words: [
+    "Titanic","El Rey León","Toy Story","Shrek","Harry Potter","Star Wars","Jurassic Park","Frozen",
+    "Piratas del Caribe","Regreso al futuro","Buscando a Nemo","Coco","Del revés","Los Simpson","La casa de papel",
+    "Juego de Tronos","El juego del calamar","Stranger Things","Friends","Breaking Bad","Barbie","Mamma Mia!",
+    "Avatar","E.T.","Spider-Man","Campeones","Aquí no hay quien viva","Pokémon","Bob Esponja","Ratatouille",
+    "Gru, mi villano favorito","Los Increíbles"]},
+  planes: { label: "Planes", emoji: "🎉", words: [
+    "Boda","Primera cita","Examen final","Mudanza","Entrevista de trabajo","Atasco","Resaca","Fiesta sorpresa",
+    "Selectividad","Nochevieja","Despedida de soltero","Karaoke","Acampada","Viaje en avión","Ir al dentista",
+    "Concierto","Carnaval","San Fermín","Black Friday","Fiesta de pijamas","Tomatina","Reunión de vecinos",
+    "Clase de yoga","Perder las llaves","Quedarse sin batería","Comida de Navidad","Cena romántica","Erasmus",
+    "Botellón","Cola del súper","Apagón","Cumpleaños infantil"]},
+  marcas: { label: "Marcas y apps", emoji: "📱", words: [
+    "Ikea","Zara","Mercadona","McDonald's","Netflix","Lego","Coca-Cola","Apple","Nintendo","Amazon","Spotify",
+    "Instagram","TikTok","WhatsApp","Google Maps","Chupa Chups","Cola Cao","Nocilla","Tinder","Wallapop","Glovo",
+    "Uber","Primark","Burger King","Red Bull","Nutella","Fanta","Playmobil","Duolingo","YouTube","Ryanair","Decathlon"]}
 };
 const CAT_KEYS = Object.keys(CATS);
 const MIN_P = 3, MAX_P = 15, REVEAL_MS = 10000;
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ===================== UTILIDADES ===================== */
 const $ = s => document.querySelector(s);
@@ -329,8 +486,10 @@ const store = {
 let toastT;
 function toast(msg) {
   const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200);
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2400);
 }
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+function replay(node, cls) { node.classList.remove(cls); void node.offsetWidth; node.classList.add(cls); }
 
 // Entero aleatorio uniforme en [0, n) con crypto.getRandomValues (sin sesgo de módulo)
 function rndInt(n) {
@@ -338,16 +497,60 @@ function rndInt(n) {
   do { crypto.getRandomValues(a); } while (a[0] >= lim);
   return a[0] % n;
 }
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) { const j = rndInt(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; }
-  return arr;
-}
 function randId(len) {
   const ch = "abcdefghijkmnpqrstuvwxyz23456789"; let s = "";
   for (let i = 0; i < len; i++) s += ch[rndInt(ch.length)];
   return s;
 }
+// PRNG determinista (cyrb128 + sfc32): todos los móviles calculan lo mismo a partir de la semilla
+function cyrb128(str) {
+  let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762;
+  for (let i = 0, k; i < str.length; i++) {
+    k = str.charCodeAt(i);
+    h1 = h2 ^ Math.imul(h1 ^ k, 597399067); h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+    h3 = h4 ^ Math.imul(h3 ^ k, 951274213); h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+  }
+  h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067); h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+  h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213); h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+  h1 ^= (h2 ^ h3 ^ h4); h2 ^= h1; h3 ^= h1; h4 ^= h1;
+  return [h1 >>> 0, h2 >>> 0, h3 >>> 0, h4 >>> 0];
+}
+function seeded(str) {
+  let [a, b, c, d] = cyrb128(str);
+  const rng = () => {
+    a |= 0; b |= 0; c |= 0; d |= 0;
+    const t = (((a + b) | 0) + d) | 0; d = (d + 1) | 0;
+    a = b ^ (b >>> 9); b = (c + (c << 3)) | 0; c = (c << 21) | (c >>> 11); c = (c + t) | 0;
+    return (t >>> 0) / 4294967296;
+  };
+  for (let i = 0; i < 15; i++) rng();
+  return rng;
+}
+function sShuffle(arr, rng) {
+  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+  return arr;
+}
+// Huella de las listas de palabras y del algoritmo: si cambian, una partida antigua daría resultados distintos en cada móvil
+const ALGO = "4";
+const WORDS_HASH = cyrb128(ALGO + JSON.stringify(CATS))[0].toString(36);
+
+// Elegir impostores al azar, pero quien lo fue hace poco tiene muchas menos probabilidades de repetir
+// (nunca es imposible: así nadie puede descartar a nadie con seguridad).
+const W_LAST = 0.15, W_PREV = 0.5;
+function weightedPick(n, k, recent, rnd) {
+  const w = [...Array(n).keys()].map(i =>
+    recent[0] && recent[0].has(i) ? W_LAST : recent[1] && recent[1].has(i) ? W_PREV : 1);
+  const pool = [...Array(n).keys()], out = [];
+  while (out.length < k) {
+    let r = rnd() * pool.reduce((s, i) => s + w[i], 0), j = 0;
+    for (; j < pool.length - 1; j++) { r -= w[pool[j]]; if (r < 0) break; }
+    out.push(pool.splice(j, 1)[0]);
+  }
+  return new Set(out);
+}
+const hostRnd = () => rndInt(0x40000000) / 0x40000000;
 const maxImp = n => Math.max(1, Math.floor(Math.max(n, MIN_P) / 2) - 1);
+const joinNames = a => a.length <= 1 ? (a[0] || "") : a.slice(0, -1).join(", ") + " y " + a[a.length - 1];
 
 /* ===================== OFUSCACIÓN ===================== */
 // JSON → UTF-8 → XOR (clave fija + sal aleatoria de 4 bytes) → base64 URL-safe.
@@ -380,23 +583,86 @@ function deobfuscate(str) {
 function isLocalFile() { return location.protocol === "file:" || location.origin === "null"; }
 function baseUrl() { return isLocalFile() ? location.href.split("#")[0] : location.origin + location.pathname; }
 
+/* ===================== RASCA (capa plateada en un canvas) ===================== */
+function makeScratch(canvas, label, onDone) {
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  let done = false, drawing = false, touched = false, last = null, moves = 0, w = 0, h = 0;
+  function paint() {
+    const r = canvas.getBoundingClientRect(); if (!r.width) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = r.width; h = r.height;
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, "#d5d9e0"); g.addColorStop(1, "#bfc5cf");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#475569"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = "700 " + (h > 120 ? 20 : 16) + "px 'Instrument Sans', system-ui, sans-serif";
+    ctx.fillText(label, w / 2, h / 2);
+    done = false; touched = false; canvas.classList.remove("gone");
+  }
+  const pos = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  function scratch(p) {
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = Math.max(36, h * .2);
+    ctx.beginPath(); ctx.moveTo((last || p).x + .01, (last || p).y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p; if (++moves % 8 === 0) check();
+  }
+  function check() {
+    const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let clear = 0, tot = 0;
+    for (let i = 3; i < d.length; i += 4 * 29) { tot++; if (d[i] < 50) clear++; }
+    if (tot && clear / tot > .45) finish();
+  }
+  function finish() { if (done) return; done = true; drawing = false; canvas.classList.add("gone"); if (onDone) onDone(); }
+  canvas.addEventListener("pointerdown", e => {
+    if (done) return; drawing = true; touched = true; last = null;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    scratch(pos(e));
+  });
+  canvas.addEventListener("pointermove", e => { if (drawing && !done) scratch(pos(e)); });
+  const up = () => { if (drawing && !done) check(); drawing = false; last = null; };
+  canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", up);
+  return { reset: paint, reveal: finish, get done() { return done; }, get touched() { return touched; } };
+}
+
+// Estallido de papelitos al destapar. Igual para todos los roles: desde lejos no se sabe quién es quién.
+function burst(container) {
+  if (REDUCED || !container.animate) return;
+  const colors = ["#ffffff", "#94a3b8"];
+  for (let i = 0; i < 22; i++) {
+    const p = el("i"); p.style.background = colors[i % colors.length];
+    container.append(p);
+    const a = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 110;
+    p.animate([
+      { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
+      { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist - 40}px) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }
+    ], { duration: 650 + Math.random() * 350, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => p.remove();
+  }
+}
+
 /* ===================== ESTADO DEL ANFITRIÓN ===================== */
 const DEFAULT = { players: ["", "", ""], impostors: 1, mode: "cat", cat: "aleatoria",
                   word: "", hint: "", showHint: true, game: null };
 let S = Object.assign({}, DEFAULT, store.get("imp_host", {}));
 if (!Array.isArray(S.players) || S.players.length < MIN_P) S.players = ["", "", ""];
+if (S.cat !== "aleatoria" && !CATS[S.cat]) S.cat = "aleatoria";   // categorías de versiones anteriores
+if (S.game && !S.game.url) { S.game = null; S.view = "setup"; }      // partidas de versiones con un enlace por jugador
 const save = () => store.set("imp_host", S);
 const filledNames = () => S.players.map(s => s.trim()).filter(Boolean);
+let newRow = -1, dealNext = false, freshStamp = -1, solRound = 0;
 
 /* ===================== PREPARACIÓN ===================== */
 function renderPlayers() {
   const box = $("#playerList"); box.innerHTML = "";
   S.players.forEach((name, i) => {
-    const row = document.createElement("div"); row.className = "row";
-    const num = document.createElement("span"); num.className = "num"; num.textContent = i + 1;
+    const row = el("div", "row" + (i === newRow ? " new" : ""));
+    const num = el("span", "num", i + 1); num.setAttribute("aria-hidden", "true");
     const inp = document.createElement("input");
-    Object.assign(inp, { type: "text", value: name, placeholder: "Nombre del jugador " + (i + 1),
-                         maxLength: 20, autocomplete: "off", enterKeyHint: "next" });
+    Object.assign(inp, { type: "text", value: name, placeholder: "Nombre del jugador " + (i + 1) + "…",
+                         maxLength: 20, autocomplete: "off", enterKeyHint: "next", name: "jugador" + (i + 1) });
+    inp.setAttribute("aria-label", "Nombre del jugador " + (i + 1));
     inp.addEventListener("input", () => { S.players[i] = inp.value; save(); updateCounts(); });
     inp.addEventListener("keydown", e => {
       if (e.key !== "Enter") return;
@@ -404,39 +670,43 @@ function renderPlayers() {
       const next = box.querySelectorAll("input")[i + 1];
       if (next) next.focus(); else if (S.players.length < MAX_P) addPlayer();
     });
-    const del = document.createElement("button");
-    del.className = "btn icon"; del.textContent = "✕"; del.setAttribute("aria-label", "Quitar jugador");
+    const del = el("button", "btn icon", "✕");
+    del.setAttribute("aria-label", "Quitar a " + (name.trim() || "jugador " + (i + 1)));
     del.disabled = S.players.length <= MIN_P;
     del.addEventListener("click", () => { S.players.splice(i, 1); save(); renderPlayers(); });
     row.append(num, inp, del); box.append(row);
   });
+  newRow = -1;
   $("#addPlayer").disabled = S.players.length >= MAX_P;
   updateCounts();
 }
 function addPlayer() {
   if (S.players.length >= MAX_P) return;
-  S.players.push(""); save(); renderPlayers();
+  S.players.push(""); newRow = S.players.length - 1; save(); renderPlayers();
   const all = $("#playerList").querySelectorAll("input"); all[all.length - 1].focus();
 }
 function updateCounts() {
   const n = filledNames().length, m = maxImp(n);
   if (S.impostors > m) S.impostors = m;
   if (S.impostors < 1) S.impostors = 1;
-  $("#countPlayers").textContent = n + " / " + MAX_P;
+  $("#countPlayers").textContent = n + " de " + MAX_P;
   $("#impVal").textContent = S.impostors;
   $("#maxImp").textContent = "máx. " + m;
   $("#impMinus").disabled = S.impostors <= 1;
   $("#impPlus").disabled = S.impostors >= m;
 }
 function renderWordMode() {
-  document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
+  document.querySelectorAll(".seg button").forEach(b => {
+    const on = b.dataset.mode === S.mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+  });
   $("#catBox").hidden = S.mode !== "cat";
   $("#manualBox").hidden = S.mode !== "manual";
   const chips = $("#chips"); chips.innerHTML = "";
-  const opts = [["aleatoria", "🎲", "Aleatoria"]].concat(CAT_KEYS.map(k => [k, CATS[k].emoji, CATS[k].label]));
+  const opts = [["aleatoria", "🎲", "Todas"]].concat(CAT_KEYS.map(k => [k, CATS[k].emoji, CATS[k].label]));
   for (const [k, emo, label] of opts) {
-    const c = document.createElement("button"); c.className = "chip" + (S.cat === k ? " on" : "");
-    const sp = document.createElement("span"); sp.textContent = emo;
+    const c = el("button", "chip" + (S.cat === k ? " on" : ""));
+    c.setAttribute("aria-pressed", S.cat === k);
+    const sp = el("span", null, emo); sp.setAttribute("aria-hidden", "true");
     c.append(sp, document.createTextNode(label));
     c.addEventListener("click", () => { S.cat = k; save(); renderWordMode(); });
     chips.append(c);
@@ -448,21 +718,34 @@ function renderSetup() {
   $("#showHint").checked = !!S.showHint;
   $("#fileWarn").hidden = !isLocalFile();
 }
+const pack = o => obfuscate(new TextEncoder().encode(JSON.stringify(o)));
+// El enlace de la partida (#p=…) lleva los datos comunes; cada móvil calcula el rol del jugador que elija
+const hostGameData = () => { try { return deobfuscate(S.game.url.split("#p=")[1]); } catch (e) { return null; } };
 
-function pickWord() {
-  if (S.mode === "manual") {
-    const w = S.word.trim();
-    if (!w) { toast("Escribe la palabra secreta"); $("#manualWord").focus(); return null; }
-    return { word: w, hint: S.hint.trim() || null };
+// Impostores más recientes de la partida anterior (nombres, el más reciente primero).
+// Partida de enlace fijo: se recalcula con la semilla y la última ronda que este móvil jugó con su billete.
+function recentImpostors() {
+  const g = S.game; if (!g) return [];
+  if (g.v === 2) {
+    const d = hostGameData(); if (!d || !d.z) return [];
+    const R = Math.max(1, parseInt(store.get("imp_round_" + d.g, 1), 10) || 1);
+    return [R, R - 1].filter(r => r >= 1).map(r => [...impsUpTo(d, r)].map(i => d.l[i]));
   }
-  const cat = S.cat === "aleatoria" ? CAT_KEYS[rndInt(CAT_KEYS.length)] : S.cat;
-  const used = store.get("imp_used", {});
-  let u = used[cat] || [];
-  let pool = CATS[cat].words.filter(w => !u.includes(w));
-  if (!pool.length) { u = []; pool = CATS[cat].words.slice(); }
-  const word = pool[rndInt(pool.length)];
-  u.push(word); used[cat] = u; store.set("imp_used", used);
-  return { word, hint: CATS[cat].label };
+  return Array.isArray(g.hist) ? g.hist : [];
+}
+// Nombres → posiciones en la lista nueva (por si cambian el orden o algún jugador)
+const toIdx = (recent, names) => recent.map(arr =>
+  arr.map(nm => names.findIndex(x => x.toLowerCase() === String(nm).toLowerCase())).filter(i => i >= 0));
+
+// Partida con enlace fijo: cada enlace lleva la semilla común y cada móvil calcula cada ronda
+function createFixedGame(names, n, k) {
+  const gid = randId(8), seed = randId(16);
+  const cat = S.cat === "aleatoria" || CATS[S.cat] ? S.cat : "aleatoria";
+  const pv = toIdx(recentImpostors(), names);
+  const G = { v: 3, g: gid, z: seed, p: n, k, c: cat, sh: S.showHint ? 1 : 0, l: names, pv, wh: WORDS_HASH };
+  S.game = { v: 2, gid, names, imp: k, url: baseUrl() + "#p=" + pack(G), sent: false };
+  save();
+  return true;
 }
 
 function createGame() {
@@ -470,49 +753,43 @@ function createGame() {
   if (names.length < MIN_P) { toast("Hacen falta al menos " + MIN_P + " jugadores"); return false; }
   if (names.length > MAX_P) { toast("Máximo " + MAX_P + " jugadores"); return false; }
   const lower = names.map(n => n.toLowerCase());
-  if (new Set(lower).size !== lower.length) { toast("Hay nombres repetidos"); return false; }
+  if (new Set(lower).size !== lower.length) { toast("Hay nombres repetidos: cambia uno"); return false; }
 
-  const pick = pickWord(); if (!pick) return false;
   const n = names.length, k = Math.min(Math.max(1, S.impostors), maxImp(n));
-  const impSet = new Set(shuffle([...Array(n).keys()]).slice(0, k));
+  solRound = 0;
+  if (S.mode !== "manual") return createFixedGame(names, n, k);
+
+  const word = S.word.trim();
+  if (!word) { toast("Escribe la palabra secreta"); $("#manualWord").focus(); return false; }
+  const hint = S.hint.trim() || null;
+  const recent = recentImpostors();
+  const impSet = weightedPick(n, k, toIdx(recent, names).map(a => new Set(a)), hostRnd);
+  const hist = [[...impSet].map(i => names[i])].concat(recent.slice(0, 1));
   const starter = names[rndInt(n)];
 
   // Mismo grupo de jugadores → misma partida (gid) y ronda siguiente
-  const same = S.game && JSON.stringify(S.game.names) === JSON.stringify(names);
+  const same = S.game && S.game.v !== 2 && JSON.stringify(S.game.names) === JSON.stringify(names);
   const gid = same ? S.game.gid : randId(8);
   const roundNum = same ? S.game.roundNum + 1 : 1;
   const r = Math.max(Date.now(), same ? S.game.r + 1 : 0);
 
-  const enc = new TextEncoder();
-  const raw = names.map((name, i) => {
-    const o = { v: 1, g: gid, r, q: roundNum, n: name, p: n, k, s: starter };
-    if (impSet.has(i)) { o.i = 1; if (S.showHint) o.h = pick.hint || ""; }
-    else { o.i = 0; o.w = pick.word; }
-    return enc.encode(JSON.stringify(o));
-  });
-  // Rellenar todos al mismo tamaño para que la longitud del enlace no delate al impostor
-  const L = Math.max(...raw.map(b => b.length)) + 4 + rndInt(12);
-  const base = baseUrl();
-  const links = raw.map((b, i) => {
-    const padded = new Uint8Array(L).fill(32); padded.set(b);
-    return { name: names[i], url: base + "#j=" + obfuscate(padded) };
-  });
-
-  S.game = { gid, r, roundNum, names, imp: k, links, sent: names.map(() => false), manual: S.mode === "manual" };
-  if (S.mode === "manual") { S.word = ""; S.hint = ""; }
+  const G = { v: 3, m: 1, g: gid, r, q: roundNum, p: n, k, s: starter, l: names, w: word, ih: hint, sh: S.showHint ? 1 : 0, im: [...impSet] };
+  S.game = { gid, r, roundNum, names, imp: k, url: baseUrl() + "#p=" + pack(G), sent: false, manual: true, hist, word };
+  S.word = ""; S.hint = "";
   save();
   // Este dispositivo ya conoce la ronda nueva → sus enlaces antiguos se verán como "ronda antigua"
   store.set("imp_latest_" + gid, r);
   return true;
 }
 
-/* ===================== PANTALLA DE ENLACES ===================== */
-function markSent(i) {
-  if (!S.game.sent[i]) { S.game.sent[i] = true; save(); renderShare(); }
+/* ===================== PANTALLA DE BILLETES ===================== */
+function markSent() {
+  if (!S.game.sent) { S.game.sent = true; freshStamp = 0; save(); renderShare(); }
 }
-function message(name, url) {
-  return "🕵️ " + name + ", aquí tienes tu rol para El Impostor (ronda " + S.game.roundNum +
-         "). Ábrelo sin que nadie mire tu pantalla:\n" + url;
+function message(url) {
+  if (S.game.v === 2)
+    return "🎟️ Partida de El Impostor: abre el enlace, elige tu nombre y rasca tu billete sin que nadie mire. Vale para toda la partida:\n" + url;
+  return "🎟️ El Impostor, ronda " + S.game.roundNum + ": abre el enlace, elige tu nombre y rasca tu billete sin que nadie mire:\n" + url;
 }
 async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
@@ -522,120 +799,362 @@ async function copyText(text) {
   let ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
   ta.remove(); return ok;
 }
+
+function avatar(name, cls) {
+  const av = el("div", "avatar" + (cls ? " " + cls : ""), name.charAt(0).toUpperCase());
+  av.setAttribute("aria-hidden", "true");
+  return av;
+}
 function renderShare() {
-  const g = S.game;
-  $("#roundTitle").textContent = "Ronda " + g.roundNum;
-  $("#stPlayers").textContent = g.links.length;
-  $("#stImp").textContent = g.imp;
-  $("#stSent").textContent = g.sent.filter(Boolean).length + "/" + g.links.length;
+  const g = S.game, fixed = g.v === 2;
+  $("#roundTitle").textContent = fixed ? "Partida lista" : "Ronda " + g.roundNum;
+  $("#shareSub").textContent = fixed ? "Manda este enlace al grupo. Cada uno elige su nombre y rasca su billete."
+                                     : "Manda el enlace de esta ronda al grupo. Cada uno elige su nombre.";
+  $("#newRound").hidden = fixed;
+  $("#editGame").textContent = fixed ? "Nueva partida o cambiar jugadores" : "Cambiar jugadores o ajustes";
+  $("#shareNote").textContent = fixed
+    ? "Vale para toda la partida. Al acabar cada ronda, todos pulsáis «Siguiente ronda»."
+    : "Con palabra escrita hay que mandar un enlace nuevo en cada ronda.";
   $("#fileWarn2").hidden = !isLocalFile();
   const box = $("#links"); box.innerHTML = "";
-  g.links.forEach((l, i) => {
-    const card = document.createElement("div"); card.className = "player" + (g.sent[i] ? " sent" : "");
-    const head = document.createElement("div"); head.className = "head";
-    const nm = document.createElement("div"); nm.className = "name"; nm.textContent = l.name;
-    const badge = document.createElement("div"); badge.className = "badge";
-    badge.textContent = g.sent[i] ? "✓ Enviado" : "Pendiente";
-    head.append(nm, badge);
+  const card = el("div", "ticket stub" + (dealNext ? " deal" : ""));
+  const head = el("div", "head");
+  head.append(el("div", "name", "Enlace de la partida"));
+  if (!g.sent) head.append(el("div", "state", "Por enviar"));
+  card.append(head);
+  if (g.sent) card.append(el("div", "stamp" + (freshStamp === 0 ? " fresh" : ""), "Enviado"));
+  card.append(el("p", "summ", g.names.length + " jugadores y " + g.imp + (g.imp === 1 ? " impostor" : " impostores")));
+  const roster = el("div", "roster");
+  g.names.forEach(nm => { const sp = el("span"); sp.append(avatar(nm), document.createTextNode(nm)); roster.append(sp); });
+  card.append(roster);
 
-    const act = document.createElement("div"); act.className = "actions";
-    const wa = document.createElement("a"); wa.className = "btn wa";
-    wa.href = "https://wa.me/?text=" + encodeURIComponent(message(l.name, l.url));
-    wa.target = "_blank"; wa.rel = "noopener noreferrer"; wa.textContent = "💬 Enviar por WhatsApp";
-    wa.addEventListener("click", () => setTimeout(() => markSent(i), 300));
-
-    const cp = document.createElement("button"); cp.className = "btn icon"; cp.textContent = "📋";
-    cp.title = "Copiar enlace"; cp.setAttribute("aria-label", "Copiar enlace");
-    cp.addEventListener("click", async () => {
-      const ok = await copyText(message(l.name, l.url));
-      toast(ok ? "Enlace de " + l.name + " copiado" : "No se pudo copiar");
-      if (ok) markSent(i);
-    });
-    act.append(wa, cp);
-
-    if (navigator.share) {
-      const sh = document.createElement("button"); sh.className = "btn icon"; sh.textContent = "📤";
-      sh.title = "Compartir (Telegram, SMS…)"; sh.setAttribute("aria-label", "Compartir");
-      sh.addEventListener("click", async () => {
-        try { await navigator.share({ text: message(l.name, l.url) }); markSent(i); } catch (e) {}
-      });
-      act.append(sh);
-    }
-    card.append(head, act); box.append(card);
+  const act = el("div", "actions");
+  const wa = el("a", "btn wa", "WhatsApp");
+  wa.href = "https://wa.me/?text=" + encodeURIComponent(message(g.url));
+  wa.target = "_blank"; wa.rel = "noopener noreferrer";
+  wa.setAttribute("aria-label", "Mandar el enlace de la partida por WhatsApp");
+  wa.addEventListener("click", () => setTimeout(markSent, 300));
+  const cp = el("button", "btn icon", "📋");
+  cp.setAttribute("aria-label", "Copiar el enlace de la partida");
+  cp.addEventListener("click", async () => {
+    const ok = await copyText(message(g.url));
+    toast(ok ? "Enlace copiado" : "No se pudo copiar: prueba con WhatsApp");
+    if (ok) markSent();
   });
+  act.append(wa, cp);
+  if (navigator.share) {
+    const sh = el("button", "btn icon", "📤");
+    sh.setAttribute("aria-label", "Compartir el enlace de la partida con otra app");
+    sh.addEventListener("click", async () => { try { await navigator.share({ text: message(g.url) }); markSent(); } catch (e) {} });
+    act.append(sh);
+  }
+  card.append(act); box.append(card);
+  dealNext = false; freshStamp = -1;
+  renderHostSol();
+}
+
+/* ---- Solución: solo en el móvil del anfitrión ---- */
+function renderHostSol() {
+  const g = S.game, box = $("#hostSol");
+  if (!g || (g.v !== 2 && !g.word)) { box.hidden = true; return; }
+  box.hidden = false;
+  const fixed = g.v === 2;
+  $("#solRoundRow").hidden = !fixed;
+  if (fixed) {
+    if (!solRound) solRound = Math.max(1, parseInt(store.get("imp_round_" + g.gid, 1), 10) || 1);
+    $("#solRoundVal").textContent = solRound;
+    $("#solMinus").disabled = solRound <= 1;
+  }
+}
+function hideHostSol() { $("#solOut").hidden = true; $("#solOut").innerHTML = ""; $("#solBtn").textContent = "Ver la solución"; }
+function toggleHostSol() {
+  const out = $("#solOut");
+  if (!out.hidden) { hideHostSol(); return; }
+  if (!confirm("¿Ya habéis votado? Vas a ver la palabra y quién era el impostor.")) return;
+  const g = S.game; let word, cat = null, imps;
+  if (g.v === 2) {
+    const d = hostGameData(); if (!d) { toast("No se pudo calcular la solución"); return; }
+    const wc = wordFor(d, solRound); cat = CATS[wc[0]].label; word = wc[1];
+    imps = [...impsUpTo(d, solRound)].map(i => d.l[i]);
+  } else { word = g.word; imps = g.hist && g.hist[0] || []; }
+  out.innerHTML = "";
+  const p1 = el("div"); p1.append((g.v === 2 ? "Ronda " + solRound + ": la palabra era " : "La palabra era "), el("b", null, word), cat ? " (" + cat + ")." : ".");
+  const p2 = el("div"); p2.append(imps.length === 1 ? "El impostor era " : "Los impostores eran ", el("b", null, joinNames(imps)), ".");
+  out.append(p1, p2); out.hidden = false; $("#solBtn").textContent = "Ocultar la solución";
+}
+function changeSolRound(delta) {
+  if (solRound + delta < 1) return;
+  solRound += delta; hideHostSol(); renderHostSol(); replay($("#solRoundVal"), "pop");
 }
 
 /* ===================== PANTALLA DEL JUGADOR ===================== */
-let hideTimer = null, current = null;
+let hideTimer = null, current = null, fixedGame = null, fixedToken = "", round = 1, turn = 0, roleScratch = null;
+
+// Impostores de la ronda R. Cada ronda depende de las dos anteriores (y la 1 de la partida anterior, d.pv),
+// así que se calculan en orden desde la 1. Todos los móviles obtienen exactamente lo mismo.
+const impsCache = {};
+function impsUpTo(d, R) {
+  const cache = impsCache[d.z] || (impsCache[d.z] = []);
+  const pv = Array.isArray(d.pv) ? d.pv : [];
+  const hist = j => j >= 1 ? cache[j - 1] : new Set((Array.isArray(pv[-j]) ? pv[-j] : []).filter(i => Number.isInteger(i) && i >= 0 && i < d.p));
+  for (let r = cache.length + 1; r <= R; r++)
+    cache.push(weightedPick(d.p, d.k, [hist(r - 1), hist(r - 2)], seeded(d.z + "|ronda|" + r)));
+  return cache[R - 1];
+}
+// Palabra de la ronda R: orden aleatorio fijo para toda la partida, así no se repiten
+function wordFor(d, R) {
+  const list = d.c === "aleatoria"
+    ? CAT_KEYS.flatMap(c => CATS[c].words.map(w => [c, w]))
+    : CATS[d.c].words.map(w => [d.c, w]);
+  sShuffle(list, seeded(d.z + "|palabras"));
+  return list[(R - 1) % list.length];
+}
+// Orden de turnos de la ronda R (aleatorio, igual en todos los móviles)
+const orderFor = (d, R) => sShuffle(d.l.slice(), seeded(d.z + "|orden|" + R));
+
+function roundData(d, R) {
+  const [cat, word] = wordFor(d, R);
+  const o = { n: d.n, p: d.p, k: d.k, q: R, o: orderFor(d, R) };
+  if (impsUpTo(d, R).has(d.x)) { o.i = 1; if (d.sh) o.h = CATS[cat].label; }
+  else { o.i = 0; o.w = word; }
+  return o;
+}
+function renderFixedRound() {
+  const d = fixedGame;
+  current = roundData(d, round);
+  store.set("imp_round_" + d.g, round);
+  history.replaceState(null, "", location.pathname + location.search + "#j=" + fixedToken + "&r=" + round);
+  $("#prevRound").disabled = round <= 1;
+  fillPlayerInfo(current);
+}
+function changeRound(delta) {
+  if (!fixedGame || round + delta < 1) return;
+  const t = $("#pTicket");
+  const swap = () => {
+    round += delta; renderFixedRound(); resetTimer();
+    t.classList.remove("swap-out"); replay(t, "swap-in"); replay($("#pRound"), "pop");
+  };
+  window.scrollTo({ top: 0, behavior: REDUCED ? "auto" : "smooth" });
+  if (REDUCED) swap(); else { t.classList.add("swap-out"); setTimeout(swap, 230); }
+  toast("Ronda " + (round + delta));
+}
+function fillPlayerInfo(d) {
+  $("#pOk").hidden = false;
+  $("#pName").textContent = d.n;
+  $("#pRound").textContent = d.q || 1;
+  $("#pInfo").textContent = d.p + " jugadores, " + d.k + (d.k === 1 ? " impostor" : " impostores");
+  renderRole(d);
+  turn = 0; renderOrder();
+  requestAnimationFrame(() => hideRole());
+}
+function renderOrder() {
+  const d = current, ol = $("#orderList"); ol.innerHTML = "";
+  const order = Array.isArray(d.o) ? d.o : (d.s ? [d.s] : []);
+  order.forEach((nm, i) => {
+    const li = el("li"), b = el("button", i === turn ? "now" : i < turn ? "done" : "");
+    b.append(el("span", "n", (i + 1) + "."), document.createTextNode(nm + (!Array.isArray(d.o) ? " empieza" : "")));
+    if (i === turn) b.setAttribute("aria-current", "true");
+    b.addEventListener("click", () => { turn = i; renderOrder(); });
+    li.append(b); ol.append(li);
+  });
+  $("#nextTurn").hidden = order.length <= 1;
+}
+function nextTurn() {
+  const n = Array.isArray(current.o) ? current.o.length : 1;
+  turn = (turn + 1) % n; renderOrder();
+  const now = $("#orderList .now"); if (now) toast("Le toca a " + now.textContent.replace(/^\d+\.\s*/, ""));
+}
+function renderRole(d) {
+  const c = $("#roleContent"); c.innerHTML = "";
+  if (d.i) {
+    c.append(el("p", "role-k", "Esta ronda eres"), el("p", "role-w", "el impostor"),
+             el("p", "role-s", "No conoces la palabra. Escucha, disimula y trata de adivinarla."));
+    if (typeof d.h === "string") c.append(el("span", "role-h", d.h ? "Pista: " + d.h : "Esta vez no hay pista"));
+  } else {
+    const w = el("p", "role-w" + (d.w.length > 13 ? " long" : ""), d.w);
+    c.append(el("p", "role-k", "Tu palabra es"), w, el("p", "role-s", "Descríbela sin decirla y encuentra al impostor."));
+  }
+}
 function hideRole() {
   clearTimeout(hideTimer); hideTimer = null;
-  $("#roleBox").hidden = true; $("#hideBtn").hidden = true; $("#revealBtn").hidden = false;
-  $("#roleContent").innerHTML = "";
+  if (!roleScratch) roleScratch = makeScratch($("#roleScratch"), "Rasca aquí con el dedo", onRevealed);
+  roleScratch.reset();
+  $("#revealBtn").hidden = false; $("#hideBtn").hidden = true; $("#scratchHint").textContent = "Rasca con el dedo. Que nadie más mire.";
+  const bar = $("#coverBar"); bar.style.transition = "none"; bar.style.transform = "scaleX(0)";
 }
-function showRole() {
-  const d = current, box = $("#roleBox"), c = $("#roleContent");
-  c.innerHTML = "";
-  const el = (tag, cls, txt) => { const e = document.createElement(tag); e.className = cls; e.textContent = txt; return e; };
-  c.append(el("div", "label", d.n));
-  if (d.i) {
-    box.className = "reveal imp";
-    c.append(el("div", "ico", "🔪"), el("div", "label", "Eres el"), el("div", "big", "IMPOSTOR"));
-    if (typeof d.h === "string") c.append(el("div", "hint", d.h ? "Pista: " + d.h : "Esta vez no hay pista"));
-    c.append(el("div", "tapsub", "Disimula y averigua la palabra."));
-  } else {
-    box.className = "reveal ok";
-    c.append(el("div", "ico", "🤫"), el("div", "label", "Tu palabra es:"), el("div", "big", d.w));
-    c.append(el("div", "tapsub", "Encuentra al impostor sin decir la palabra."));
-  }
-  $("#revealBtn").hidden = true; box.hidden = false; $("#hideBtn").hidden = false;
-  // barra de cuenta atrás
-  const bar = $("#timerBar");
-  bar.style.transition = "none"; bar.style.transform = "scaleX(1)";
-  void bar.offsetWidth;
+function onRevealed() {
+  $("#revealBtn").hidden = true; $("#hideBtn").hidden = false; $("#scratchHint").textContent = "Se tapa solo en 10 s.";
+  burst($("#burst")); replay($("#pTicket"), "shake");
+  if (navigator.vibrate) navigator.vibrate(30);
+  const bar = $("#coverBar");
+  bar.style.transition = "none"; bar.style.transform = "scaleX(1)"; void bar.offsetWidth;
   bar.style.transition = "transform " + REVEAL_MS + "ms linear"; bar.style.transform = "scaleX(0)";
   clearTimeout(hideTimer); hideTimer = setTimeout(hideRole, REVEAL_MS);
 }
-function renderPlayer(token) {
-  hideRole();
-  $("#pOk").hidden = true; $("#pOld").hidden = true; $("#pBad").hidden = true;
-  let d;
-  try {
-    d = deobfuscate(token);
-    if (d.v !== 1 || !d.n || !d.g || typeof d.r !== "number" || (!d.i && !d.w)) throw new Error("datos");
-  } catch (e) { $("#pBad").hidden = false; return; }
 
+/* ---- Temporizador del debate ---- */
+const TM_OPTS = [1, 2, 3, 5], RING = 2 * Math.PI * 52;
+let tmTotal = store.get("imp_tm", 2) * 60, tmLeft = tmTotal, tmEnd = 0, tmIv = null, audio = null, wakeLock = null;
+const fmt = s => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+function renderTimer() {
+  const left = Math.max(0, tmLeft);
+  $("#tmDisplay").textContent = fmt(Math.ceil(left));
+  const ring = $("#tmRing"); ring.style.strokeDasharray = RING; ring.style.strokeDashoffset = RING * (1 - left / tmTotal);
+  $("#clock").classList.toggle("urgent", tmIv !== null && left <= 10);
+  $("#tmStart").textContent = tmIv ? "Pausar" : (tmLeft < tmTotal && tmLeft > 0 ? "Seguir" : "Empezar");
+  $("#tmOpts").querySelectorAll(".chip").forEach(b => {
+    const on = +b.dataset.min * 60 === tmTotal; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+  });
+}
+async function keepAwake(on) {
+  try {
+    if (on && "wakeLock" in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => wakeLock = null); }
+    else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) {}
+}
+function beep() {
+  try {
+    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(.001, t); g.gain.exponentialRampToValueAtTime(.35, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + .7);
+    o.start(t); o.stop(t + .75);
+  } catch (e) {}
+}
+function stopTimer() { clearInterval(tmIv); tmIv = null; keepAwake(false); }
+function resetTimer() { stopTimer(); tmLeft = tmTotal; renderTimer(); }
+function toggleTimer() {
+  if (tmIv) { stopTimer(); renderTimer(); return; }
+  if (tmLeft <= 0) tmLeft = tmTotal;
+  try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
+  tmEnd = Date.now() + tmLeft * 1000; keepAwake(true);
+  tmIv = setInterval(() => {
+    tmLeft = (tmEnd - Date.now()) / 1000;
+    if (tmLeft <= 0) {
+      tmLeft = 0; stopTimer(); beep(); setTimeout(beep, 350);
+      if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
+      toast("¡Tiempo! Hora de votar");
+    }
+    renderTimer();
+  }, 250);
+  renderTimer();
+}
+TM_OPTS.forEach(m => {
+  const b = el("button", "chip", m + " min"); b.dataset.min = m;
+  b.addEventListener("click", () => { tmTotal = m * 60; store.set("imp_tm", m); resetTimer(); });
+  $("#tmOpts").append(b);
+});
+
+// Enlace de la partida → billete del jugador elegido (mismo formato que los enlaces individuales)
+function playerTokenFor(G, x) {
+  if (G.m) {
+    const o = { v: 1, g: G.g, r: G.r, q: G.q, n: G.l[x], p: G.p, k: G.k, s: G.s };
+    if (G.im.includes(x)) { o.i = 1; if (G.sh) o.h = G.ih || ""; } else { o.i = 0; o.w = G.w; }
+    return pack(o);
+  }
+  return pack({ v: 2, g: G.g, z: G.z, n: G.l[x], x, p: G.p, k: G.k, c: G.c, sh: G.sh, l: G.l, pv: G.pv, wh: G.wh });
+}
+const groupFromPlayer = d => ({ v: 3, g: d.g, z: d.z, p: d.p, k: d.k, c: d.c, sh: d.sh, l: d.l, pv: d.pv, wh: d.wh });
+function validGroup(G) {
+  return !!G && G.v === 3 && typeof G.g === "string" && Array.isArray(G.l) && G.l.length === G.p && G.p >= MIN_P &&
+    G.l.every(n => typeof n === "string" && n) && Number.isInteger(G.k) && G.k >= 1 && G.k < G.p &&
+    (G.m ? typeof G.w === "string" && Array.isArray(G.im) && typeof G.r === "number"
+         : typeof G.z === "string" && (G.c === "aleatoria" || !!CATS[G.c]));
+}
+function showPlayerState(id) {
+  show("player");
+  ["pOk", "pOld", "pBad", "pVer"].forEach(s => $("#" + s).hidden = s !== id);
+  $("#notMe").hidden = true;
+}
+let pickG = null, pickTok = "", notMe = null;
+function setNotMe(d, tok) {
+  notMe = tok ? { tok, gid: d.g, name: d.n } : null;
+  $("#notMe").hidden = !notMe;
+}
+function renderPick(tok) {
+  let G = null; try { G = deobfuscate(tok); } catch (e) {}
+  if (!validGroup(G)) { showPlayerState("pBad"); return; }
+  if (!G.m && G.wh !== WORDS_HASH) { showPlayerState("pVer"); return; }
+  pickG = G; pickTok = tok;
+  const me = store.get("imp_me_" + G.g, null);
+  if (me && Number.isInteger(me.x) && G.l[me.x] === me.n) { goPlayer(me.x); return; }
+  show("pick");
+  $("#pickSub").textContent = (G.m ? "Ronda " + G.q + ". " : "") + "Toca tu nombre para abrir tu billete. Tu rol sigue tapado hasta que lo rasques.";
+  const list = $("#pickList"); list.innerHTML = "";
+  G.l.forEach((nm, i) => {
+    const b = el("button", "ticket pick deal"); b.style.animationDelay = (i * 50) + "ms";
+    b.setAttribute("aria-label", "Soy " + nm);
+    b.append(avatar(nm), el("span", "nm", nm));
+    b.addEventListener("click", () => goPlayer(i));
+    list.append(b);
+  });
+}
+function goPlayer(x) {
+  const G = pickG;
+  store.set("imp_me_" + G.g, { x, n: G.l[x] });
+  store.set("imp_group_" + G.g, pickTok);
+  history.replaceState(null, "", location.pathname + location.search + "#j=" + playerTokenFor(G, x));
+  route();
+}
+function changePlayer() {
+  if (!notMe || !confirm("¿No eres " + notMe.name + "? Volverás a la lista para elegir tu nombre.")) return;
+  store.set("imp_me_" + notMe.gid, null);
+  history.replaceState(null, "", location.pathname + location.search + "#p=" + notMe.tok);
+  route();
+}
+
+function renderPlayer(token, rParam) {
+  clearTimeout(hideTimer);
+  $("#pOk").hidden = true; $("#pOld").hidden = true; $("#pBad").hidden = true; $("#pVer").hidden = true;
+  $("#roundCtl").hidden = true; $("#notMe").hidden = true; fixedGame = null; current = null; notMe = null;
+  let d;
+  try { d = deobfuscate(token); } catch (e) { $("#pBad").hidden = false; return; }
+
+  if (d && d.v === 2) {
+    const ok = typeof d.g === "string" && typeof d.z === "string" && d.n && Array.isArray(d.l) &&
+               d.l.length === d.p && Number.isInteger(d.x) && d.x >= 0 && d.x < d.p &&
+               Number.isInteger(d.k) && d.k >= 1 && d.k < d.p && (d.c === "aleatoria" || CATS[d.c]);
+    if (!ok) { $("#pBad").hidden = false; return; }
+    if (d.wh !== WORDS_HASH) { $("#pVer").hidden = false; return; }
+    fixedGame = d; fixedToken = token;
+    setNotMe(d, store.get("imp_group_" + d.g, null) || pack(groupFromPlayer(d)));
+    round = rParam || store.get("imp_round_" + d.g, 1);
+    if (!Number.isInteger(round) || round < 1) round = 1;
+    $("#roundCtl").hidden = false;
+    renderFixedRound();
+    return;
+  }
+
+  if (!d || d.v !== 1 || !d.n || !d.g || typeof d.r !== "number" || (!d.i && !d.w)) { $("#pBad").hidden = false; return; }
   const key = "imp_latest_" + d.g, latest = store.get(key, 0);
   if (latest && d.r < latest) { $("#pOld").hidden = false; return; }
   if (d.r > latest) store.set(key, d.r);
-
+  setNotMe(d, store.get("imp_group_" + d.g, null));
   current = d;
-  $("#pOk").hidden = false;
-  $("#pName").textContent = d.n;
-  $("#pRound").textContent = "Ronda " + (d.q || 1) + " · tu rol secreto";
-  const info = $("#pInfo"); info.innerHTML = "";
-  const line = (emo, txt) => { const p = document.createElement("div"); p.textContent = emo + " " + txt; info.append(p); };
-  line("👥", d.p + " jugadores");
-  line("🔪", d.k + (d.k === 1 ? " impostor" : " impostores"));
-  if (d.s) line("🎤", "Empieza hablando: " + d.s);
+  fillPlayerInfo(d);
 }
 
 /* ===================== NAVEGACIÓN ===================== */
 function show(id) {
-  ["setup", "share", "player"].forEach(s => $("#" + s).hidden = s !== id);
+  ["setup", "share", "pick", "player"].forEach(s => $("#" + s).hidden = s !== id);
   window.scrollTo(0, 0);
 }
 function route() {
   const h = location.hash.slice(1);
-  if (h.startsWith("j=")) { show("player"); renderPlayer(h.slice(2)); return; }
-  hideRole(); current = null;
+  if (h.startsWith("p=")) { stopTimer(); renderPick(h.slice(2)); return; }
+  if (h.startsWith("j=")) {
+    const parts = h.slice(2).split("&"), rp = parts.find(p => p.startsWith("r="));
+    const r = rp ? parseInt(rp.slice(2), 10) : 0;
+    show("player"); renderPlayer(parts[0], r >= 1 && r < 100000 ? r : 0); renderTimer(); return;
+  }
+  current = null; stopTimer(); hideHostSol();
   if (S.game && S.view === "share") { renderShare(); show("share"); }
-  else { renderSetup(); show("setup"); }
+  else { show("setup"); renderSetup(); }
 }
 
 /* ===================== EVENTOS ===================== */
 $("#addPlayer").addEventListener("click", addPlayer);
-$("#impMinus").addEventListener("click", () => { S.impostors--; save(); updateCounts(); });
-$("#impPlus").addEventListener("click", () => { S.impostors++; save(); updateCounts(); });
+$("#impMinus").addEventListener("click", () => { S.impostors--; save(); updateCounts(); replay($("#impVal"), "pop"); });
+$("#impPlus").addEventListener("click", () => { S.impostors++; save(); updateCounts(); replay($("#impVal"), "pop"); });
 document.querySelectorAll(".seg button").forEach(b =>
   b.addEventListener("click", () => { S.mode = b.dataset.mode; save(); renderWordMode(); }));
 $("#manualWord").addEventListener("input", e => { S.word = e.target.value; save(); });
@@ -643,30 +1162,49 @@ $("#manualHint").addEventListener("input", e => { S.hint = e.target.value; save(
 $("#showHint").addEventListener("change", e => { S.showHint = e.target.checked; save(); });
 
 $("#createBtn").addEventListener("click", () => {
-  if (createGame()) { S.view = "share"; save(); renderShare(); show("share"); }
+  if (createGame()) { S.view = "share"; save(); dealNext = true; show("share"); renderShare(); }
 });
 $("#newRound").addEventListener("click", () => {
-  const pending = S.game.sent.filter(s => !s).length;
-  if (pending && !confirm("Aún no has enviado " + pending + " enlace(s). ¿Crear una ronda nueva de todos modos?")) return;
-  if (S.game.manual) {
-    // Palabra escrita a mano: hay que escribir otra
-    S.mode = "manual"; S.view = "setup"; save(); renderSetup(); show("setup");
-    toast("Escribe la palabra de la nueva ronda"); $("#manualWord").focus();
-    return;
-  }
-  if (createGame()) { renderShare(); show("share"); toast("Ronda " + S.game.roundNum + " creada"); }
+  if (!S.game.sent && !confirm("Aún no has mandado el enlace de esta ronda. ¿Crear otra de todos modos?")) return;
+  // Palabra escrita a mano: hay que escribir otra
+  S.mode = "manual"; S.view = "setup"; save(); show("setup"); renderSetup(); hideHostSol();
+  toast("Escribe la palabra de la nueva ronda"); $("#manualWord").focus();
 });
-$("#editGame").addEventListener("click", () => { S.view = "setup"; save(); renderSetup(); show("setup"); });
+$("#editGame").addEventListener("click", () => { S.view = "setup"; save(); hideHostSol(); show("setup"); renderSetup(); });
+$("#solBtn").addEventListener("click", toggleHostSol);
+$("#openMine").addEventListener("click", () => { location.hash = "p=" + S.game.url.split("#p=")[1]; });
+$("#notMe").addEventListener("click", changePlayer);
+$("#solMinus").addEventListener("click", () => changeSolRound(-1));
+$("#solPlus").addEventListener("click", () => changeSolRound(1));
 
-$("#revealBtn").addEventListener("click", showRole);
+$("#revealBtn").addEventListener("click", () => roleScratch && roleScratch.reveal());
 $("#hideBtn").addEventListener("click", hideRole);
+$("#nextRound").addEventListener("click", () => changeRound(1));
+$("#prevRound").addEventListener("click", () => changeRound(-1));
+$("#nextTurn").addEventListener("click", nextTurn);
+$("#tmStart").addEventListener("click", toggleTimer);
+$("#tmReset").addEventListener("click", resetTimer);
 $("#ownGame").addEventListener("click", () => {
   history.replaceState(null, "", location.pathname + location.search);
   route();
 });
-// Si se cambia de app o se bloquea la pantalla, se tapa el rol
-document.addEventListener("visibilitychange", () => { if (document.hidden) hideRole(); });
+// Si se cambia de app o se bloquea la pantalla, se tapa el rol (el temporizador sigue contando)
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { if (current) hideRole(); }
+  else if (tmIv) keepAwake(true);
+});
 window.addEventListener("hashchange", route);
+// Repintar la capa plateada si cambia el tamaño o terminan de cargar las fuentes
+let rzT;
+window.addEventListener("resize", () => {
+  clearTimeout(rzT);
+  rzT = setTimeout(() => {
+    if (current && roleScratch && !roleScratch.touched) roleScratch.reset();
+  }, 150);
+});
+if (document.fonts) document.fonts.ready.then(() => {
+  if (current && roleScratch && !roleScratch.touched) roleScratch.reset();
+});
 
 route();
 </script>
