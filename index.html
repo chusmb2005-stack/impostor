@@ -129,10 +129,12 @@
   .scratch .under{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px}
 
   /* Billete del jugador */
-  .pticket{--cut:94px;margin:6px 0 14px;transition:transform .25s, opacity .25s}
-  .pticket .t-head{height:94px;padding:18px 22px 0;display:flex;justify-content:space-between;align-items:flex-start}
+  .pticket{--cut:112px;margin:6px 0 14px;transition:transform .25s, opacity .25s}
+  .pticket .t-head{height:112px;padding:18px 22px 0;display:flex;justify-content:space-between;align-items:flex-start}
   .pticket .brand{font-family:var(--display);font-size:20px;color:var(--cobalt);line-height:1}
   .pticket .holder{font-size:15px;color:var(--ink-soft);margin-top:6px;font-weight:600;max-width:24ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pticket .starter{font-size:15px;color:var(--ink);margin-top:4px;font-weight:600}
+  .pticket .starter b{font-weight:800}
   .pticket .rnd{text-align:right;font-size:13px;font-weight:700;color:var(--ink-soft);line-height:1}
   .pticket .rnd b{display:inline-block;font-family:var(--display);font-weight:400;font-size:40px;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums}
   .pticket .t-body{border-top:2px dashed rgba(15,23,42,.22);margin:0 18px;padding:18px 0 14px}
@@ -267,7 +269,7 @@
 
   <section class="panel">
     <label class="switch">
-      <span><b>Pista para el impostor</b><span class="muted small" style="display:block">Verá la categoría de la palabra</span></span>
+      <span><b>Pista para el impostor</b><span class="muted small" style="display:block">Verá la categoría. Desactívalo para jugar sin pista.</span></span>
       <input type="checkbox" id="showHint" name="pista-impostor"><span class="track" aria-hidden="true"></span>
     </label>
   </section>
@@ -327,7 +329,7 @@
     <div class="tk-wrap">
     <article class="ticket pticket" id="pTicket" aria-labelledby="pName">
       <div class="t-head">
-        <div><div class="brand">El Impostor</div><div class="holder">Billete de <span id="pName"></span></div></div>
+        <div><div class="brand">El Impostor</div><div class="holder">Billete de <span id="pName"></span></div><div class="starter" id="pStarter"></div></div>
         <div class="rnd">Ronda<b id="pRound">1</b></div>
       </div>
       <div class="t-body">
@@ -400,42 +402,58 @@ const CATS = {
     "Paella","Sushi","Fondue","Croquetas","Churros con chocolate","Pulpo a la gallega","Ramen","Kebab",
     "Roscón de Reyes","Turrón","Gazpacho","Fabada","Algodón de azúcar","Palomitas","Calçots","Ensaladilla rusa",
     "Huevos rotos","Nachos","Tiramisú","Cocido madrileño","Tortilla de patatas","Pipas","Gominolas","Pizza con piña",
-    "Bocadillo de calamares","Ostras","Caracoles","Percebes","Fideuá","Uvas de Nochevieja","Barbacoa","Fondant de chocolate"]},
+    "Bocadillo de calamares","Ostras","Caracoles","Percebes","Fideuá","Uvas de Nochevieja","Barbacoa","Fondant de chocolate",
+    "Lasaña","Salmorejo","Torrijas","Pan con tomate","Crepes","Gofre","Mejillones","Jamón ibérico","Patatas bravas",
+    "Pimientos de Padrón","Flan","Arroz con leche","Polvorones","Hamburguesa","Burrito","Donut","Granizado","Croissant"]},
   animales: { label: "Animales", emoji: "🦎", words: [
     "Pingüino","Camaleón","Pulpo","Murciélago","Canguro","Perezoso","Flamenco","Ornitorrinco","Medusa","Mosquito",
     "Cucaracha","Pavo real","Tiburón","Llama","Mapache","Erizo","Cigüeña","Avestruz","Caracol","Lobo","Gallina",
-    "Hámster","Delfín","Koala","Oso panda","Camello","Tortuga","Búho","Cocodrilo","Abeja","Loro","Jirafa"]},
+    "Hámster","Delfín","Koala","Oso panda","Camello","Tortuga","Búho","Cocodrilo","Abeja","Loro","Jirafa",
+    "Elefante","León","Tigre","Gorila","Hipopótamo","Rinoceronte","Ballena","Foca","Morsa",
+    "Pato","Cisne","Hormiga","Araña","Escorpión","Mariquita","Caballo","Oveja","Burro"]},
   lugares: { label: "Lugares", emoji: "🏰", words: [
     "Aeropuerto","Hospital","Casino","Submarino","Biblioteca","Cementerio","Gimnasio","Discoteca","Zoo","Museo",
     "Estación espacial","Crucero","Cárcel","Parque de atracciones","Camping","Estadio de fútbol","Peluquería","Ascensor",
     "Supermercado","Spa","Iglesia","Autoescuela","Farmacia","Feria","Isla desierta","Castillo","Metro","Playa",
-    "Estación de esquí","Cine","Hotel","Granja"]},
+    "Estación de esquí","Cine","Hotel","Granja",
+    "Universidad","Comisaría","Gasolinera","Mercadillo","Faro","Volcán","Desierto","Selva","Polo Norte",
+    "Pirámides de Egipto","Torre Eiffel","Casa encantada","Tren nocturno","Bar de tapas","Bodega","Parking","Plató de televisión","Laboratorio"]},
   objetos: { label: "Objetos", emoji: "☂️", words: [
     "Paraguas","Espejo","Paracaídas","Brújula","Mando de la tele","Cepillo de dientes","Despertador","Bola de discoteca",
     "Ventilador","Termómetro","Microondas","Linterna","Tijeras","Palo selfie","Patinete eléctrico","Tirita","Mechero",
     "Peluca","Hucha","Lupa","Plancha","Secador de pelo","Pinza de la ropa","Imán","Globo","Candado","Maleta",
-    "Aspiradora","Chicle","Gafas de sol","Cargador del móvil","Dado"]},
+    "Aspiradora","Chicle","Gafas de sol","Cargador del móvil","Dado",
+    "Mochila","Bicicleta","Guitarra","Reloj de arena","Tostadora","Lavadora","Nevera","Sacacorchos","Abanico",
+    "Bufanda","Chanclas","Pendientes","Anillo","Corona","Varita mágica","Espada","Tienda de campaña","Bola de cristal"]},
   profesiones: { label: "Profesiones", emoji: "🧑‍🚒", words: [
     "Astronauta","Bombero","Payaso","Detective","Socorrista","Dentista","Cirujano","Mago","Influencer","Fontanero",
     "Juez","Árbitro","Cura","Espía","Jardinero","Profesor de autoescuela","Repartidor","Peluquero","Panadero","Taxista",
     "Veterinario","Chef","Paparazzi","Camarero","Guardia de seguridad","Tatuador","Funcionario","DJ",
-    "Presentador de televisión","Piloto de avión","Monitor de gimnasio","Abogado"]},
+    "Presentador de televisión","Piloto de avión","Monitor de gimnasio","Abogado",
+    "Enfermero","Policía","Profesor","Arquitecto","Electricista","Albañil","Cartero","Pescador","Agricultor",
+    "Carnicero","Farmacéutico","Periodista","Fotógrafo","Actor","Cantante de ópera","Futbolista","Youtuber","Científico"]},
   cine: { label: "Cine y series", emoji: "🎬", words: [
     "Titanic","El Rey León","Toy Story","Shrek","Harry Potter","Star Wars","Jurassic Park","Frozen",
     "Piratas del Caribe","Regreso al futuro","Buscando a Nemo","Coco","Del revés","Los Simpson","La casa de papel",
     "Juego de Tronos","El juego del calamar","Stranger Things","Friends","Breaking Bad","Barbie","Mamma Mia!",
     "Avatar","E.T.","Spider-Man","Campeones","Aquí no hay quien viva","Pokémon","Bob Esponja","Ratatouille",
-    "Gru, mi villano favorito","Los Increíbles"]},
+    "Gru, mi villano favorito","Los Increíbles",
+    "Indiana Jones","El señor de los anillos","Matrix","Los Vengadores","Batman","Aladdín","La sirenita","Up","Cars",
+    "Mulán","Jumanji","Solo en casa","Encanto","Miércoles","Los Serrano","Élite","Operación Triunfo","Mr. Bean"]},
   planes: { label: "Planes", emoji: "🎉", words: [
     "Boda","Primera cita","Examen final","Mudanza","Entrevista de trabajo","Atasco","Resaca","Fiesta sorpresa",
     "Selectividad","Nochevieja","Despedida de soltero","Karaoke","Acampada","Viaje en avión","Ir al dentista",
     "Concierto","Carnaval","San Fermín","Black Friday","Fiesta de pijamas","Tomatina","Reunión de vecinos",
     "Clase de yoga","Perder las llaves","Quedarse sin batería","Comida de Navidad","Cena romántica","Erasmus",
-    "Botellón","Cola del súper","Apagón","Cumpleaños infantil"]},
+    "Botellón","Cola del súper","Apagón","Cumpleaños infantil",
+    "Graduación","Viaje de fin de curso","Partido de fútbol","Fiesta de disfraces","Halloween","Festival de música","Escape room","Paintball","Bolera",
+    "Pedida de mano","Cita a ciegas","Cena con los suegros","Guerra de almohadas","Feria de abril","Día de playa","Maratón de series","Noche de juegos de mesa","Clase de baile"]},
   marcas: { label: "Marcas y apps", emoji: "📱", words: [
     "Ikea","Zara","Mercadona","McDonald's","Netflix","Lego","Coca-Cola","Apple","Nintendo","Amazon","Spotify",
     "Instagram","TikTok","WhatsApp","Google Maps","Chupa Chups","Cola Cao","Nocilla","Tinder","Wallapop","Glovo",
-    "Uber","Primark","Burger King","Red Bull","Nutella","Fanta","Playmobil","Duolingo","YouTube","Ryanair","Decathlon"]}
+    "Uber","Primark","Burger King","Red Bull","Nutella","Fanta","Playmobil","Duolingo","YouTube","Ryanair","Decathlon",
+    "Google","Snapchat","Telegram","PlayStation","Fortnite","Minecraft","Pepsi","Starbucks","KFC",
+    "Telepizza","El Corte Inglés","Renfe","Correos","Bimbo","Adidas","Nike","Shein","Vinted"]}
 };
 const CAT_KEYS = Object.keys(CATS);
 // Iconos de línea propios (heredan el color del texto). Los emojis de CATS se mantienen solo por compatibilidad con la huella de versión.
@@ -927,6 +945,8 @@ function fillPlayerInfo(d) {
   $("#pOk").hidden = false;
   $("#pName").textContent = d.n;
   $("#pRound").textContent = d.q || 1;
+  const starter = Array.isArray(d.o) ? d.o[0] : d.s, st = $("#pStarter"); st.innerHTML = "";
+  if (starter) st.append("Empieza: ", el("b", null, starter));
   renderRole(d);
   requestAnimationFrame(() => hideRole());
 }
