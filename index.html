@@ -6,9 +6,11 @@
 <meta name="theme-color" content="#0f172a">
 <meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-title" content="Impostor">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="referrer" content="no-referrer">
 <title>El Impostor</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%230f172a'/><g fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' transform='translate(2.4 2.4) scale(.8)'><path d='M4.5 6h15A1.5 1.5 0 0 1 21 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5V14a2 2 0 0 0 0-4V7.5A1.5 1.5 0 0 1 4.5 6z'/><path d='M15 6.5v1.5M15 11.2v1.6M15 16v1.5'/></g></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Instrument+Sans:wght@400..700&display=swap">
@@ -91,9 +93,10 @@
     transition:background-color .15s, color .15s, transform .08s}
   .chip:hover{background:#273449}
   .chip:active{transform:scale(.95)}
-  .chip span{font-size:24px;line-height:1;display:block}
+  .chip .i{width:26px;height:26px;display:block;color:var(--muted);transition:color .15s}
+  .chip.on .i{color:var(--ink)}
   .chip.on{background:var(--yellow);color:var(--ink)}
-  .chip.on span{animation:hop .4s cubic-bezier(.3,1.6,.5,1)}
+  .chip.on .i{animation:hop .4s cubic-bezier(.3,1.6,.5,1)}
 
   .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
   .switch input{position:absolute;opacity:0;width:1px;height:1px}
@@ -217,7 +220,9 @@
   details.rules li{margin-bottom:6px}
   .center{text-align:center}
   .empty{text-align:center;padding:40px 14px}
-  .empty .ico{font-size:60px}
+  .empty .ico{display:flex;justify-content:center}
+  .empty .ico .i{width:64px;height:64px;color:var(--muted)}
+  .btn.icon .i{width:22px;height:22px}
   .empty h2{font-family:var(--display);font-weight:400;margin:12px 0 8px;font-size:30px}
 
   .toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translate(-50%,16px);
@@ -400,19 +405,19 @@
   </div>
 
   <div id="pOld" class="empty" hidden>
-    <div class="ico" aria-hidden="true">⌛</div>
+    <div class="ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h11M6.5 20.5h11"/><path d="M7.5 3.5c0 4.5 9 4.5 9 8.5s-9 4-9 8.5"/><path d="M16.5 3.5c0 4.5-9 4.5-9 8.5s9 4 9 8.5"/></svg></div>
     <h2>Ronda antigua</h2>
     <p class="muted">Ya hay una ronda más nueva. Abre el último billete que te han mandado.</p>
   </div>
 
   <div id="pVer" class="empty" hidden>
-    <div class="ico" aria-hidden="true">🔄</div>
+    <div class="ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 11A7.5 7.5 0 0 0 6.2 7L4.5 8.6"/><path d="M4.5 4v4.6h4.6"/><path d="M4.5 13a7.5 7.5 0 0 0 13.3 4l1.7-1.6"/><path d="M19.5 20v-4.6h-4.6"/></svg></div>
     <h2>Partida de otra versión</h2>
     <p class="muted">La página se ha actualizado desde que se creó esta partida. Pide que repartan billetes nuevos.</p>
   </div>
 
   <div id="pBad" class="empty" hidden>
-    <div class="ico" aria-hidden="true">🎟️</div>
+    <div class="ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 6h15A1.5 1.5 0 0 1 21 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5V14a2 2 0 0 0 0-4V7.5A1.5 1.5 0 0 1 4.5 6z"/><path d="M15 6.5v1.5M15 11.2v1.6M15 16v1.5"/></svg></div>
     <h2>Billete incompleto</h2>
     <p class="muted">Falta parte del enlace. Pide que te lo vuelvan a mandar y ábrelo entero.</p>
   </div>
@@ -474,6 +479,28 @@ const CATS = {
     "Uber","Primark","Burger King","Red Bull","Nutella","Fanta","Playmobil","Duolingo","YouTube","Ryanair","Decathlon"]}
 };
 const CAT_KEYS = Object.keys(CATS);
+// Iconos de línea propios (heredan el color del texto). Los emojis de CATS se mantienen solo por compatibilidad con la huella de versión.
+const ICONS = {
+  "todas": "<rect x=\"3.5\" y=\"3.5\" width=\"17\" height=\"17\" rx=\"4\"/><circle cx=\"8.5\" cy=\"8.5\" r=\"1.3\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"12\" cy=\"12\" r=\"1.3\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"15.5\" cy=\"15.5\" r=\"1.3\" fill=\"currentColor\" stroke=\"none\"/>",
+  "comida": "<path d=\"M12 3.5c-3.4 0-6.5 1.2-8.7 3.2L12 21l8.7-14.3C18.5 4.7 15.4 3.5 12 3.5z\"/><path d=\"M5.6 10.4C7.4 9 9.6 8.2 12 8.2s4.6.8 6.4 2.2\"/><circle cx=\"10.2\" cy=\"12.4\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"13.4\" cy=\"15.2\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/>",
+  "animales": "<circle cx=\"6.5\" cy=\"10\" r=\"1.8\"/><circle cx=\"10\" cy=\"6\" r=\"1.8\"/><circle cx=\"14.5\" cy=\"6\" r=\"1.8\"/><circle cx=\"18\" cy=\"10\" r=\"1.8\"/><path d=\"M8.2 17.3c0-2.7 1.9-5.3 4.1-5.3s4.1 2.6 4.1 5.3c0 1.5-1.1 2.4-2.3 2.4-.9 0-1.3-.5-1.8-.5s-.9.5-1.8.5c-1.2 0-2.3-.9-2.3-2.4z\"/>",
+  "lugares": "<path d=\"M12 21s-6.5-5.8-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.2-6.5 11-6.5 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2.3\"/>",
+  "objetos": "<path d=\"M3.5 12a8.5 8.5 0 0 1 17 0z\"/><path d=\"M12 3.5V2.5\"/><path d=\"M12 12v6.2a2 2 0 0 1-4 0\"/>",
+  "profesiones": "<rect x=\"3.5\" y=\"7.5\" width=\"17\" height=\"12.5\" rx=\"2.5\"/><path d=\"M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5\"/><path d=\"M3.5 12.5h17\"/><path d=\"M12 11.5v2\"/>",
+  "cine": "<rect x=\"3.5\" y=\"9\" width=\"17\" height=\"11\" rx=\"2\"/><path d=\"M3.5 9l.7-3.1a1.5 1.5 0 0 1 1.2-1.1l12.4-2.1a1.5 1.5 0 0 1 1.7 1.2L20 6.6\"/><path d=\"M8.5 4.1 10 8.6M13.5 3.2 15 7.8\"/>",
+  "planes": "<path d=\"M12 3.5a5.5 5.5 0 0 1 5.5 5.5c0 3.8-3.2 6.8-5.5 6.8S6.5 12.8 6.5 9A5.5 5.5 0 0 1 12 3.5z\"/><path d=\"M11 17.3h2l-1-1.5z\"/><path d=\"M12 17.3c0 1.6 1.4 2 0 3.7\"/>",
+  "marcas": "<rect x=\"6.5\" y=\"2.5\" width=\"11\" height=\"19\" rx=\"2.5\"/><path d=\"M10.8 18.3h2.4\"/>",
+  "copiar": "<rect x=\"8.5\" y=\"8.5\" width=\"12\" height=\"12\" rx=\"2.5\"/><path d=\"M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5\"/>",
+  "compartir": "<path d=\"M12 3.5v11\"/><path d=\"M8 7.5l4-4 4 4\"/><path d=\"M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6\"/>",
+  "reloj": "<path d=\"M6.5 3.5h11M6.5 20.5h11\"/><path d=\"M7.5 3.5c0 4.5 9 4.5 9 8.5s-9 4-9 8.5\"/><path d=\"M16.5 3.5c0 4.5-9 4.5-9 8.5s9 4 9 8.5\"/>",
+  "version": "<path d=\"M19.5 11A7.5 7.5 0 0 0 6.2 7L4.5 8.6\"/><path d=\"M4.5 4v4.6h4.6\"/><path d=\"M4.5 13a7.5 7.5 0 0 0 13.3 4l1.7-1.6\"/><path d=\"M19.5 20v-4.6h-4.6\"/>",
+  "billete": "<path d=\"M4.5 6h15A1.5 1.5 0 0 1 21 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5V14a2 2 0 0 0 0-4V7.5A1.5 1.5 0 0 1 4.5 6z\"/><path d=\"M15 6.5v1.5M15 11.2v1.6M15 16v1.5\"/>"
+};
+function icon(name) {
+  const t = document.createElement("template");
+  t.innerHTML = '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + "</svg>";
+  return t.content.firstChild;
+}
 const MIN_P = 3, MAX_P = 15, REVEAL_MS = 10000;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -702,12 +729,11 @@ function renderWordMode() {
   $("#catBox").hidden = S.mode !== "cat";
   $("#manualBox").hidden = S.mode !== "manual";
   const chips = $("#chips"); chips.innerHTML = "";
-  const opts = [["aleatoria", "🎲", "Todas"]].concat(CAT_KEYS.map(k => [k, CATS[k].emoji, CATS[k].label]));
-  for (const [k, emo, label] of opts) {
+  const opts = [["aleatoria", "todas", "Todas"]].concat(CAT_KEYS.map(k => [k, k, CATS[k].label]));
+  for (const [k, ico, label] of opts) {
     const c = el("button", "chip" + (S.cat === k ? " on" : ""));
     c.setAttribute("aria-pressed", S.cat === k);
-    const sp = el("span", null, emo); sp.setAttribute("aria-hidden", "true");
-    c.append(sp, document.createTextNode(label));
+    c.append(icon(ico), document.createTextNode(label));
     c.addEventListener("click", () => { S.cat = k; save(); renderWordMode(); });
     chips.append(c);
   }
@@ -834,7 +860,7 @@ function renderShare() {
   wa.target = "_blank"; wa.rel = "noopener noreferrer";
   wa.setAttribute("aria-label", "Mandar el enlace de la partida por WhatsApp");
   wa.addEventListener("click", () => setTimeout(markSent, 300));
-  const cp = el("button", "btn icon", "📋");
+  const cp = el("button", "btn icon"); cp.append(icon("copiar"));
   cp.setAttribute("aria-label", "Copiar el enlace de la partida");
   cp.addEventListener("click", async () => {
     const ok = await copyText(message(g.url));
@@ -843,7 +869,7 @@ function renderShare() {
   });
   act.append(wa, cp);
   if (navigator.share) {
-    const sh = el("button", "btn icon", "📤");
+    const sh = el("button", "btn icon"); sh.append(icon("compartir"));
     sh.setAttribute("aria-label", "Compartir el enlace de la partida con otra app");
     sh.addEventListener("click", async () => { try { await navigator.share({ text: message(g.url) }); markSent(); } catch (e) {} });
     act.append(sh);
