@@ -190,28 +190,6 @@
   .sol-out{margin-top:12px;padding:14px;border-radius:14px;background:var(--deeper);line-height:1.55}
   .sol-out b{color:var(--yellow)}
 
-  /* Turnos */
-  .order{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
-  .order li button{border:0;font-family:inherit;cursor:pointer;background:var(--deeper);color:var(--text);border-radius:999px;
-    padding:8px 14px;font-size:15px;font-weight:600;transition:background-color .2s, color .2s, transform .2s}
-  .order li button .n{color:var(--muted);margin-right:5px;font-variant-numeric:tabular-nums}
-  .order li button.now{background:var(--yellow);color:var(--ink);transform:scale(1.08)}
-  .order li button.now .n{color:var(--ink-soft)}
-  .order li button.done{opacity:.55}
-
-  /* Temporizador en anillo */
-  .clock{position:relative;width:180px;height:180px;margin:4px auto 14px}
-  .clock svg{width:100%;height:100%;transform:rotate(-90deg)}
-  .clock .track{fill:none;stroke:var(--deeper);stroke-width:12}
-  .clock .prog{fill:none;stroke:var(--yellow);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
-  .clock .time{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:46px;font-variant-numeric:tabular-nums}
-  .clock.urgent .prog{stroke:var(--pink)}
-  .clock.urgent .time{animation:pulse 1s ease-in-out infinite}
-  .tm-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
-  .tm-opts .chip{padding:9px 4px;font-size:15px}
-  .tm-actions{display:flex;gap:8px}
-  .tm-actions .btn{flex:1}
-
   details.rules summary{cursor:pointer;font-size:18px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
   details.rules summary::-webkit-details-marker{display:none}
   details.rules summary::after{content:"＋";color:var(--muted);transition:transform .2s}
@@ -372,25 +350,6 @@
       <button id="prevRound" class="btn icon" aria-label="Volver a la ronda anterior">−</button>
       <button id="nextRound" class="btn primary">Siguiente ronda</button>
     </div>
-
-    <section class="panel" aria-labelledby="hOrder">
-      <h2 id="hOrder">Turnos <span class="pill" id="pInfo"></span></h2>
-      <ol class="order" id="orderList"></ol>
-      <button id="nextTurn" class="btn block">Siguiente turno</button>
-    </section>
-
-    <section class="panel" aria-labelledby="hTimer">
-      <h2 id="hTimer">Temporizador</h2>
-      <div class="tm-opts" id="tmOpts" role="group" aria-label="Duración"></div>
-      <div class="clock" id="clock">
-        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"/><circle class="prog" id="tmRing" cx="60" cy="60" r="52"/></svg>
-        <div class="time" id="tmDisplay" role="timer">2:00</div>
-      </div>
-      <div class="tm-actions">
-        <button id="tmStart" class="btn primary">Empezar</button>
-        <button id="tmReset" class="btn">Reiniciar</button>
-      </div>
-    </section>
 
     <details class="panel rules">
       <summary>Cómo se juega</summary>
@@ -914,7 +873,7 @@ function changeSolRound(delta) {
 }
 
 /* ===================== PANTALLA DEL JUGADOR ===================== */
-let hideTimer = null, current = null, fixedGame = null, fixedToken = "", round = 1, turn = 0, roleScratch = null;
+let hideTimer = null, current = null, fixedGame = null, fixedToken = "", round = 1, roleScratch = null;
 
 // Impostores de la ronda R. Cada ronda depende de las dos anteriores (y la 1 de la partida anterior, d.pv),
 // así que se calculan en orden desde la 1. Todos los móviles obtienen exactamente lo mismo.
@@ -957,7 +916,7 @@ function changeRound(delta) {
   if (!fixedGame || round + delta < 1) return;
   const t = $("#pTicket");
   const swap = () => {
-    round += delta; renderFixedRound(); resetTimer();
+    round += delta; renderFixedRound();
     t.classList.remove("swap-out"); replay(t, "swap-in"); replay($("#pRound"), "pop");
   };
   window.scrollTo({ top: 0, behavior: REDUCED ? "auto" : "smooth" });
@@ -968,27 +927,8 @@ function fillPlayerInfo(d) {
   $("#pOk").hidden = false;
   $("#pName").textContent = d.n;
   $("#pRound").textContent = d.q || 1;
-  $("#pInfo").textContent = d.p + " jugadores, " + d.k + (d.k === 1 ? " impostor" : " impostores");
   renderRole(d);
-  turn = 0; renderOrder();
   requestAnimationFrame(() => hideRole());
-}
-function renderOrder() {
-  const d = current, ol = $("#orderList"); ol.innerHTML = "";
-  const order = Array.isArray(d.o) ? d.o : (d.s ? [d.s] : []);
-  order.forEach((nm, i) => {
-    const li = el("li"), b = el("button", i === turn ? "now" : i < turn ? "done" : "");
-    b.append(el("span", "n", (i + 1) + "."), document.createTextNode(nm + (!Array.isArray(d.o) ? " empieza" : "")));
-    if (i === turn) b.setAttribute("aria-current", "true");
-    b.addEventListener("click", () => { turn = i; renderOrder(); });
-    li.append(b); ol.append(li);
-  });
-  $("#nextTurn").hidden = order.length <= 1;
-}
-function nextTurn() {
-  const n = Array.isArray(current.o) ? current.o.length : 1;
-  turn = (turn + 1) % n; renderOrder();
-  const now = $("#orderList .now"); if (now) toast("Le toca a " + now.textContent.replace(/^\d+\.\s*/, ""));
 }
 function renderRole(d) {
   const c = $("#roleContent"); c.innerHTML = "";
@@ -1017,58 +957,6 @@ function onRevealed() {
   bar.style.transition = "transform " + REVEAL_MS + "ms linear"; bar.style.transform = "scaleX(0)";
   clearTimeout(hideTimer); hideTimer = setTimeout(hideRole, REVEAL_MS);
 }
-
-/* ---- Temporizador del debate ---- */
-const TM_OPTS = [1, 2, 3, 5], RING = 2 * Math.PI * 52;
-let tmTotal = store.get("imp_tm", 2) * 60, tmLeft = tmTotal, tmEnd = 0, tmIv = null, audio = null, wakeLock = null;
-const fmt = s => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
-function renderTimer() {
-  const left = Math.max(0, tmLeft);
-  $("#tmDisplay").textContent = fmt(Math.ceil(left));
-  const ring = $("#tmRing"); ring.style.strokeDasharray = RING; ring.style.strokeDashoffset = RING * (1 - left / tmTotal);
-  $("#clock").classList.toggle("urgent", tmIv !== null && left <= 10);
-  $("#tmStart").textContent = tmIv ? "Pausar" : (tmLeft < tmTotal && tmLeft > 0 ? "Seguir" : "Empezar");
-  $("#tmOpts").querySelectorAll(".chip").forEach(b => {
-    const on = +b.dataset.min * 60 === tmTotal; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
-  });
-}
-async function keepAwake(on) {
-  try {
-    if (on && "wakeLock" in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => wakeLock = null); }
-    else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
-  } catch (e) {}
-}
-function beep() {
-  try {
-    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
-    o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
-    g.gain.setValueAtTime(.001, t); g.gain.exponentialRampToValueAtTime(.35, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + .7);
-    o.start(t); o.stop(t + .75);
-  } catch (e) {}
-}
-function stopTimer() { clearInterval(tmIv); tmIv = null; keepAwake(false); }
-function resetTimer() { stopTimer(); tmLeft = tmTotal; renderTimer(); }
-function toggleTimer() {
-  if (tmIv) { stopTimer(); renderTimer(); return; }
-  if (tmLeft <= 0) tmLeft = tmTotal;
-  try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
-  tmEnd = Date.now() + tmLeft * 1000; keepAwake(true);
-  tmIv = setInterval(() => {
-    tmLeft = (tmEnd - Date.now()) / 1000;
-    if (tmLeft <= 0) {
-      tmLeft = 0; stopTimer(); beep(); setTimeout(beep, 350);
-      if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
-      toast("¡Tiempo! Hora de votar");
-    }
-    renderTimer();
-  }, 250);
-  renderTimer();
-}
-TM_OPTS.forEach(m => {
-  const b = el("button", "chip", m + " min"); b.dataset.min = m;
-  b.addEventListener("click", () => { tmTotal = m * 60; store.set("imp_tm", m); resetTimer(); });
-  $("#tmOpts").append(b);
-});
 
 // Enlace de la partida → billete del jugador elegido (mismo formato que los enlaces individuales)
 function playerTokenFor(G, x) {
@@ -1166,13 +1054,13 @@ function show(id) {
 }
 function route() {
   const h = location.hash.slice(1);
-  if (h.startsWith("p=")) { stopTimer(); renderPick(h.slice(2)); return; }
+  if (h.startsWith("p=")) { renderPick(h.slice(2)); return; }
   if (h.startsWith("j=")) {
     const parts = h.slice(2).split("&"), rp = parts.find(p => p.startsWith("r="));
     const r = rp ? parseInt(rp.slice(2), 10) : 0;
-    show("player"); renderPlayer(parts[0], r >= 1 && r < 100000 ? r : 0); renderTimer(); return;
+    show("player"); renderPlayer(parts[0], r >= 1 && r < 100000 ? r : 0); return;
   }
-  current = null; stopTimer(); hideHostSol();
+  current = null; hideHostSol();
   if (S.game && S.view === "share") { renderShare(); show("share"); }
   else { show("setup"); renderSetup(); }
 }
@@ -1207,18 +1095,12 @@ $("#revealBtn").addEventListener("click", () => roleScratch && roleScratch.revea
 $("#hideBtn").addEventListener("click", hideRole);
 $("#nextRound").addEventListener("click", () => changeRound(1));
 $("#prevRound").addEventListener("click", () => changeRound(-1));
-$("#nextTurn").addEventListener("click", nextTurn);
-$("#tmStart").addEventListener("click", toggleTimer);
-$("#tmReset").addEventListener("click", resetTimer);
 $("#ownGame").addEventListener("click", () => {
   history.replaceState(null, "", location.pathname + location.search);
   route();
 });
-// Si se cambia de app o se bloquea la pantalla, se tapa el rol (el temporizador sigue contando)
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) { if (current) hideRole(); }
-  else if (tmIv) keepAwake(true);
-});
+// Si se cambia de app o se bloquea la pantalla, se tapa el rol
+document.addEventListener("visibilitychange", () => { if (document.hidden && current) hideRole(); });
 window.addEventListener("hashchange", route);
 // Repintar la capa plateada si cambia el tamaño o terminan de cargar las fuentes
 let rzT;
